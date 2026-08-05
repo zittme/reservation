@@ -1,0 +1,8 @@
+<query id="deleteHoliday" action="delete">
+	<tables>
+		<table name="reservation_holiday" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="holiday_srl" var="holiday_srl" required="true" />
+	</conditions>
+</query>

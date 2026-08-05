@@ -1,0 +1,18 @@
+<query id="insertRule" action="insert">
+	<tables>
+		<table name="reservation_schedule_rule" />
+	</tables>
+	<columns>
+		<column name="rule_srl" var="rule_srl" notnull="notnull" />
+		<column name="resource_srl" var="resource_srl" notnull="notnull" />
+		<column name="weekday" var="weekday" notnull="notnull" />
+		<column name="start_time" var="start_time" notnull="notnull" />
+		<column name="end_time" var="end_time" notnull="notnull" />
+		<column name="interval_minutes" var="interval_minutes" default="60" />
+		<column name="capacity" var="capacity" default="0" />
+		<column name="valid_from" var="valid_from" />
+		<column name="valid_to" var="valid_to" />
+		<column name="is_active" var="is_active" default="Y" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

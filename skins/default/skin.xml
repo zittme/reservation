@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">기본 스킨</title>
+	<title xml:lang="en">Default</title>
+	<description xml:lang="ko">예약 모듈 기본 스킨 (반응형)</description>
+	<description xml:lang="en">Default responsive skin for the reservation module</description>
+	<version>1.0</version>
+	<date>2026-07-30</date>
+	<author email_address="contact@zittme.com" link="https://zitt.me">
+		<name xml:lang="ko">ZZAN Studio</name>
+		<name xml:lang="en">ZZAN Studio</name>
+	</author>
+	<responsive>true</responsive>
+</skin>

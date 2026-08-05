@@ -1,0 +1,16 @@
+<query id="insertSlot" action="insert">
+	<tables>
+		<table name="reservation_slot" />
+	</tables>
+	<columns>
+		<column name="slot_srl" var="slot_srl" notnull="notnull" />
+		<column name="resource_srl" var="resource_srl" notnull="notnull" />
+		<column name="slot_date" var="slot_date" notnull="notnull" />
+		<column name="start_time" var="start_time" notnull="notnull" />
+		<column name="end_time" var="end_time" notnull="notnull" />
+		<column name="capacity" var="capacity" notnull="notnull" />
+		<column name="booked_count" var="booked_count" default="0" />
+		<column name="status" var="status" default="open" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

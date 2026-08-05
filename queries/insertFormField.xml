@@ -1,0 +1,17 @@
+<query id="insertFormField" action="insert">
+	<tables>
+		<table name="reservation_form_field" />
+	</tables>
+	<columns>
+		<column name="field_srl" var="field_srl" notnull="notnull" />
+		<column name="resource_srl" var="resource_srl" default="0" />
+		<column name="field_name" var="field_name" notnull="notnull" />
+		<column name="label" var="label" notnull="notnull" />
+		<column name="field_type" var="field_type" default="text" />
+		<column name="options" var="options" />
+		<column name="required" var="required" default="N" />
+		<column name="list_order" var="list_order" default="0" />
+		<column name="is_active" var="is_active" default="Y" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

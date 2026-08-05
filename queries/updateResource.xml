@@ -1,0 +1,26 @@
+<query id="updateResource" action="update">
+	<tables>
+		<table name="reservation_resource" />
+	</tables>
+	<columns>
+		<column name="title" var="title" />
+		<column name="summary" var="summary" />
+		<column name="content" var="content" />
+		<column name="thumb" var="thumb" />
+		<column name="capacity_default" var="capacity_default" />
+		<column name="duration" var="duration" />
+		<column name="price" var="price" />
+		<column name="require_payment" var="require_payment" />
+		<column name="buffer_before" var="buffer_before" />
+		<column name="buffer_after" var="buffer_after" />
+		<column name="max_advance_days" var="max_advance_days" />
+		<column name="min_lead_minutes" var="min_lead_minutes" />
+		<column name="cancel_deadline_hours" var="cancel_deadline_hours" />
+		<column name="status" var="status" />
+		<column name="list_order" var="list_order" />
+		<column name="last_update" var="last_update" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="resource_srl" var="resource_srl" required="true" />
+	</conditions>
+</query>

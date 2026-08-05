@@ -1,0 +1,17 @@
+<query id="getActiveBookingOnSlot" action="select">
+	<!-- 같은 회원의 같은 슬롯 활성 예약 (중복 예약 검사) -->
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="booking_srl" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="slot_srl" var="slot_srl" required="true" />
+		<condition operation="equal" column="member_srl" var="member_srl" pipe="and" required="true" />
+		<condition operation="in" column="status" var="status_list" pipe="and" required="true" />
+	</conditions>
+	<navigation>
+		<list_count var="list_count" default="1" />
+	</navigation>
+</query>

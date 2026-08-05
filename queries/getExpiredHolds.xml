@@ -1,0 +1,21 @@
+<query id="getExpiredHolds" action="select">
+	<!-- hold_expires 가 지난 hold 예약 — lazy 정리 대상. 소량씩만 가져온다 -->
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="booking_srl" />
+		<column name="slot_srl" />
+		<column name="person_count" />
+		<column name="status" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="status" var="status" required="true" />
+		<condition operation="notnull" column="hold_expires" pipe="and" />
+		<condition operation="below" column="hold_expires" var="now" pipe="and" required="true" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="booking_srl" order="asc" />
+		<list_count var="list_count" default="20" />
+	</navigation>
+</query>

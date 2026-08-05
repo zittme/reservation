@@ -1,0 +1,15 @@
+<query id="insertHoliday" action="insert">
+	<tables>
+		<table name="reservation_holiday" />
+	</tables>
+	<columns>
+		<column name="holiday_srl" var="holiday_srl" notnull="notnull" />
+		<column name="resource_srl" var="resource_srl" default="0" />
+		<column name="holiday_date" var="holiday_date" notnull="notnull" />
+		<column name="start_time" var="start_time" />
+		<column name="end_time" var="end_time" />
+		<column name="holiday_type" var="holiday_type" default="closed" />
+		<column name="reason" var="reason" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

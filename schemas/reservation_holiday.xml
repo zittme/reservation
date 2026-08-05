@@ -1,0 +1,14 @@
+<table name="reservation_holiday">
+	<column name="holiday_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<!-- 0 = 전체 리소스 공통 -->
+	<column name="resource_srl" type="bigint" notnull="notnull" default="0" index="idx_resource_srl" />
+	<!-- YYYYMMDD -->
+	<column name="holiday_date" type="char" size="8" notnull="notnull" index="idx_date" />
+	<!-- 비우면 종일. 시간대 지정 시 그 구간만 -->
+	<column name="start_time" type="varchar" size="5" />
+	<column name="end_time" type="varchar" size="5" />
+	<!-- closed = 휴무 / extra = 임시 오픈 -->
+	<column name="holiday_type" type="varchar" size="10" notnull="notnull" default="closed" />
+	<column name="reason" type="varchar" size="250" />
+	<column name="regdate" type="char" size="14" />
+</table>

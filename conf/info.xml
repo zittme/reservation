@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="0.2">
+	<title xml:lang="ko">예약</title>
+	<title xml:lang="en">Reservation</title>
+	<description xml:lang="ko">예약 서비스를 구축하고 운영하는 모듈입니다. 예약 대상과 운영시간을 등록하면 방문자가 날짜와 시간을 골라 예약하고, 관리자는 전용 화면에서 예약을 확정·취소·노쇼 처리합니다. 짓미 페이(zittme_pay)가 설치되어 있으면 유료 예약(결제)도 지원합니다.</description>
+	<description xml:lang="en">Build and operate a reservation service. Register resources and business hours, let visitors pick a date and time, and manage bookings from a dedicated admin console. Paid bookings are supported when zittme_pay is installed.</description>
+	<version>0.1.0</version>
+	<date>2026-07-30</date>
+	<category>service</category>
+	<author email_address="contact@zittme.com" link="https://zitt.me">
+		<name xml:lang="ko">ZZAN Studio</name>
+		<name xml:lang="en">ZZAN Studio</name>
+	</author>
+</module>

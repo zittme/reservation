@@ -1,0 +1,17 @@
+<table name="reservation_schedule_rule">
+	<column name="rule_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="resource_srl" type="bigint" notnull="notnull" index="idx_resource_srl" />
+	<!-- 0=일 ... 6=토 -->
+	<column name="weekday" type="int" notnull="notnull" default="0" />
+	<!-- HH:MM -->
+	<column name="start_time" type="varchar" size="5" notnull="notnull" />
+	<column name="end_time" type="varchar" size="5" notnull="notnull" />
+	<column name="interval_minutes" type="int" notnull="notnull" default="60" />
+	<!-- 0 이면 리소스의 capacity_default 사용 -->
+	<column name="capacity" type="int" notnull="notnull" default="0" />
+	<!-- YYYYMMDD, 비우면 무기한 -->
+	<column name="valid_from" type="char" size="8" />
+	<column name="valid_to" type="char" size="8" />
+	<column name="is_active" type="char" size="1" notnull="notnull" default="Y" />
+	<column name="regdate" type="char" size="14" />
+</table>

@@ -1,0 +1,12 @@
+<table name="reservation_log">
+	<column name="log_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="booking_srl" type="bigint" notnull="notnull" index="idx_booking_srl" />
+	<!-- create / confirm / cancel / noshow / done / expire / pay / refund / memo -->
+	<column name="action" type="varchar" size="40" notnull="notnull" />
+	<column name="before_status" type="varchar" size="20" />
+	<column name="after_status" type="varchar" size="20" />
+	<!-- 0 = 시스템(만료 정리 등) -->
+	<column name="actor_srl" type="bigint" notnull="notnull" default="0" />
+	<column name="memo" type="varchar" size="250" />
+	<column name="regdate" type="char" size="14" index="idx_regdate" />
+</table>

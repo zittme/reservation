@@ -1,0 +1,12 @@
+<query id="updateBookingPayOrder" action="update">
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="pay_order_srl" var="pay_order_srl" notnull="notnull" />
+		<column name="amount" var="amount" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="booking_srl" var="booking_srl" required="true" />
+	</conditions>
+</query>

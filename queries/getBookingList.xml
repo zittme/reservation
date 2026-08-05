@@ -1,0 +1,34 @@
+<query id="getBookingList" action="select">
+	<!-- 예약 관리 목록 — 슬롯을 조인해 예약일 기준으로 필터·정렬한다 -->
+	<tables>
+		<table name="reservation_booking" alias="booking" />
+		<table name="reservation_slot" alias="slot" type="left join">
+			<conditions>
+				<condition operation="equal" column="slot.slot_srl" default="booking.slot_srl" />
+			</conditions>
+		</table>
+	</tables>
+	<columns>
+		<column name="booking.*" />
+		<column name="slot.slot_date" alias="slot_date" />
+		<column name="slot.start_time" alias="start_time" />
+		<column name="slot.end_time" alias="end_time" />
+	</columns>
+	<conditions>
+		<condition operation="in" column="booking.status" var="status_list" />
+		<condition operation="equal" column="booking.resource_srl" var="resource_srl" pipe="and" />
+		<condition operation="more" column="slot.slot_date" var="from_date" pipe="and" />
+		<condition operation="less" column="slot.slot_date" var="to_date" pipe="and" />
+		<group pipe="and">
+			<condition operation="like" column="booking.booker_name" var="search_keyword" />
+			<condition operation="like" column="booking.booker_phone" var="search_keyword" pipe="or" />
+			<condition operation="like" column="booking.booking_code" var="search_keyword" pipe="or" />
+		</group>
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="booking.booking_srl" order="desc" />
+		<list_count var="list_count" default="20" />
+		<page_count var="page_count" default="10" />
+		<page var="page" default="1" />
+	</navigation>
+</query>

@@ -1,0 +1,18 @@
+<query id="getHolidayList" action="select">
+	<!-- 리소스 지정(=resource_srl) + 전체 공통(resource_srl=0) 을 함께 가져온다 -->
+	<tables>
+		<table name="reservation_holiday" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<group pipe="and">
+			<condition operation="equal" column="resource_srl" var="resource_srl" />
+			<condition operation="equal" column="resource_srl" default="0" pipe="or" />
+		</group>
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="holiday_date" order="asc" />
+	</navigation>
+</query>

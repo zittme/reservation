@@ -1,0 +1,19 @@
+<query id="getFormFieldList" action="select">
+	<!-- 리소스 지정 + 전체 공통(resource_srl=0) -->
+	<tables>
+		<table name="reservation_form_field" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<group pipe="and">
+			<condition operation="equal" column="resource_srl" var="resource_srl" />
+			<condition operation="equal" column="resource_srl" default="0" pipe="or" />
+		</group>
+		<condition operation="equal" column="is_active" default="Y" pipe="and" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="list_order" order="asc" />
+	</navigation>
+</query>

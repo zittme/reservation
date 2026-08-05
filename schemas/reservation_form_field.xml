@@ -1,0 +1,15 @@
+<table name="reservation_form_field">
+	<column name="field_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<!-- 0 = 전체 리소스 공통 -->
+	<column name="resource_srl" type="bigint" notnull="notnull" default="0" index="idx_resource_srl" />
+	<column name="field_name" type="varchar" size="80" notnull="notnull" />
+	<column name="label" type="varchar" size="250" notnull="notnull" />
+	<!-- text / textarea / select / checkbox / tel -->
+	<column name="field_type" type="varchar" size="20" notnull="notnull" default="text" />
+	<!-- select 옵션 (줄바꿈 구분) -->
+	<column name="options" type="text" />
+	<column name="required" type="char" size="1" notnull="notnull" default="N" />
+	<column name="list_order" type="int" notnull="notnull" default="0" />
+	<column name="is_active" type="char" size="1" notnull="notnull" default="Y" />
+	<column name="regdate" type="char" size="14" />
+</table>

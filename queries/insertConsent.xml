@@ -1,0 +1,14 @@
+<query id="insertConsent" action="insert">
+	<tables>
+		<table name="reservation_consent" />
+	</tables>
+	<columns>
+		<column name="consent_srl" var="consent_srl" notnull="notnull" />
+		<column name="booking_srl" var="booking_srl" notnull="notnull" />
+		<column name="agreement_type" var="agreement_type" notnull="notnull" />
+		<column name="agreement_version" var="agreement_version" />
+		<column name="agreed" var="agreed" default="Y" />
+		<column name="ipaddress" var="ipaddress" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

@@ -1,0 +1,14 @@
+<query id="getRuleList" action="select">
+	<tables>
+		<table name="reservation_schedule_rule" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="resource_srl" var="resource_srl" required="true" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="weekday" order="asc" />
+	</navigation>
+</query>

@@ -1,0 +1,22 @@
+<query id="updateBookingStatusIf" action="update">
+	<!--
+	  ★ 멱등성의 핵심 (zittme_pay.updateOrderStatusIf 와 같은 패턴).
+	  "지금 상태가 from_status_list 중 하나일 때만" 새 상태로 옮긴다.
+	  실제로 바뀌었는지는 호출부가 DB::getAffectedRows() 로 판정한다.
+	-->
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="status" var="status" notnull="notnull" />
+		<column name="hold_expires" var="hold_expires" />
+		<column name="confirmed_date" var="confirmed_date" />
+		<column name="cancelled_date" var="cancelled_date" />
+		<column name="pay_order_srl" var="pay_order_srl" />
+		<column name="admin_memo" var="admin_memo" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="booking_srl" var="booking_srl" required="true" />
+		<condition operation="in" column="status" var="from_status_list" pipe="and" required="true" />
+	</conditions>
+</query>

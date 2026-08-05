@@ -1,0 +1,19 @@
+<query id="getBookingCount" action="select">
+	<tables>
+		<table name="reservation_booking" alias="booking" />
+		<table name="reservation_slot" alias="slot" type="left join">
+			<conditions>
+				<condition operation="equal" column="slot.slot_srl" default="booking.slot_srl" />
+			</conditions>
+		</table>
+	</tables>
+	<columns>
+		<column name="count(*)" alias="count" />
+	</columns>
+	<conditions>
+		<condition operation="in" column="booking.status" var="status_list" />
+		<condition operation="equal" column="booking.resource_srl" var="resource_srl" pipe="and" />
+		<condition operation="more" column="slot.slot_date" var="from_date" pipe="and" />
+		<condition operation="less" column="slot.slot_date" var="to_date" pipe="and" />
+	</conditions>
+</query>

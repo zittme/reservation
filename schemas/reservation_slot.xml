@@ -1,0 +1,23 @@
+<table name="reservation_slot">
+	<column name="slot_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="resource_srl" type="bigint" notnull="notnull" />
+	<!-- YYYYMMDD -->
+	<column name="slot_date" type="char" size="8" notnull="notnull" />
+	<!-- HH:MM -->
+	<column name="start_time" type="varchar" size="5" notnull="notnull" />
+	<column name="end_time" type="varchar" size="5" notnull="notnull" />
+	<column name="capacity" type="int" notnull="notnull" default="1" />
+	<!--
+	  ★ 동시성의 심장. 점유는 오직 조건부 UPDATE 로만 한다:
+	  UPDATE ... SET booked_count = booked_count + N
+	   WHERE slot_srl = ? AND status = 'open' AND booked_count + N <= capacity
+	  affected rows = 1 일 때만 점유 성공. PHP 에서 조회-판단-저장 금지.
+	-->
+	<column name="booked_count" type="int" notnull="notnull" default="0" />
+	<!-- open / closed (수동 마감) -->
+	<column name="status" type="varchar" size="10" notnull="notnull" default="open" index="idx_status" />
+	<column name="regdate" type="char" size="14" />
+	<!-- 슬롯 생성기의 중복 생성 방지 -->
+	<index name="unique_slot" columns="resource_srl,slot_date,start_time" unique="true" />
+	<index name="idx_resource_date" columns="resource_srl,slot_date" />
+</table>

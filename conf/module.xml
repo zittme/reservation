@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+
+	<grants>
+		<grant name="book" default="guest">
+			<title xml:lang="ko">예약 신청</title>
+			<title xml:lang="en">Make a booking</title>
+		</grant>
+	</grants>
+
+	<actions>
+		<!-- 프론트: 예약 화면은 mid 기반으로 동작한다 -->
+		<!-- 전용 콘솔 (별도 풀스크린 패널 — 관리자에서 새탭으로 진입, 코드에서 관리자 권한 검사) -->
+		<action name="dispReservationConsole" class="Controllers\Console" standalone="true" />
+
+		<action name="dispReservationList" class="Controllers\Front" index="true" />
+		<action name="dispReservationCalendar" class="Controllers\Front" />
+		<action name="dispReservationForm" class="Controllers\Front" />
+		<action name="dispReservationResult" class="Controllers\Front" />
+		<action name="dispReservationMy" class="Controllers\Front" />
+
+		<!-- JSON/proc: 위젯·달력에서 mid 유무와 무관하게 호출 -->
+		<action name="procReservationGetSlots" class="Controllers\Booking" standalone="true" check-csrf="false" />
+		<action name="procReservationSubmit" class="Controllers\Booking" standalone="true" />
+		<action name="procReservationCancel" class="Controllers\Booking" standalone="true" />
+		<action name="procReservationGuestLookup" class="Controllers\Booking" standalone="true" />
+
+		<!-- 관리자: 전용 운영 화면 세트 -->
+		<action name="dispReservationAdminDashboard" class="Controllers\Admin" admin-index="true" menu-name="reservation" menu-index="true" permission="manager" />
+		<action name="dispReservationAdminBookings" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+		<action name="dispReservationAdminResources" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+		<action name="dispReservationAdminResourceEdit" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+		<action name="dispReservationAdminSchedule" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+		<action name="dispReservationAdminForms" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+		<action name="dispReservationAdminStats" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+		<action name="dispReservationAdminConfig" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+
+		<action name="procReservationAdminInsertConfig" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminInsertResource" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteResource" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminInsertRule" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteRule" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminInsertHoliday" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteHoliday" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminInsertField" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteField" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminUpdateBooking" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminManualBooking" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminGetBookings" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminCloseSlot" class="Controllers\Admin" permission="manager" />
+	</actions>
+
+	<menus>
+		<menu name="reservation">
+			<title xml:lang="ko">예약</title>
+			<title xml:lang="en">Reservation</title>
+		</menu>
+	</menus>
+
+	<!--
+	  zittme_pay 결제 통지 수신.
+	  주의: eventHandler 는 XML 선언만으로 동작하지 않는다. 모듈 설치/업데이트를
+	  1회 실행해야 DB triggers 에 등록된다.
+	  핸들러는 콜백 요청 안에서 실행되므로 세션을 읽거나 쓰면 안 된다.
+	-->
+	<eventHandlers>
+		<eventHandler after="zittme_pay.approved" class="Controllers\Trigger" method="triggerPayApproved" />
+		<eventHandler after="zittme_pay.cancelled" class="Controllers\Trigger" method="triggerPayCancelled" />
+		<!-- 사이트맵 모듈 목록은 인스턴스가 있는 모듈만 보여준다(닭-달걀).
+		     이 트리거로 인스턴스가 없어도 목록에 뜨게 한다 — 코어의 정식 확장점. -->
+		<eventHandler after="menu.getModuleListInSitemap" class="Controllers\Trigger" method="triggerModuleListInSitemap" />
+	</eventHandlers>
+
+</module>

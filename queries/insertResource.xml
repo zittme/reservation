@@ -1,0 +1,26 @@
+<query id="insertResource" action="insert">
+	<tables>
+		<table name="reservation_resource" />
+	</tables>
+	<columns>
+		<column name="resource_srl" var="resource_srl" notnull="notnull" />
+		<column name="module_srl" var="module_srl" default="0" />
+		<column name="title" var="title" notnull="notnull" />
+		<column name="summary" var="summary" />
+		<column name="content" var="content" />
+		<column name="thumb" var="thumb" />
+		<column name="capacity_default" var="capacity_default" default="1" />
+		<column name="duration" var="duration" default="60" />
+		<column name="price" var="price" default="0" />
+		<column name="require_payment" var="require_payment" default="N" />
+		<column name="buffer_before" var="buffer_before" default="0" />
+		<column name="buffer_after" var="buffer_after" default="0" />
+		<column name="max_advance_days" var="max_advance_days" default="90" />
+		<column name="min_lead_minutes" var="min_lead_minutes" default="60" />
+		<column name="cancel_deadline_hours" var="cancel_deadline_hours" default="24" />
+		<column name="status" var="status" default="open" />
+		<column name="list_order" var="list_order" default="0" />
+		<column name="regdate" var="regdate" />
+		<column name="last_update" var="last_update" />
+	</columns>
+</query>

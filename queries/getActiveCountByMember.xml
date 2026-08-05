@@ -1,0 +1,12 @@
+<query id="getActiveCountByMember" action="select">
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="count(*)" alias="count" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="member_srl" var="member_srl" required="true" />
+		<condition operation="in" column="status" var="status_list" pipe="and" required="true" />
+	</conditions>
+</query>

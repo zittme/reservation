@@ -1,0 +1,10 @@
+<table name="reservation_consent">
+	<column name="consent_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="booking_srl" type="bigint" notnull="notnull" index="idx_booking_srl" />
+	<!-- privacy(개인정보 수집) / marketing 등 -->
+	<column name="agreement_type" type="varchar" size="40" notnull="notnull" />
+	<column name="agreement_version" type="varchar" size="20" />
+	<column name="agreed" type="char" size="1" notnull="notnull" default="Y" />
+	<column name="ipaddress" type="varchar" size="60" />
+	<column name="regdate" type="char" size="14" index="idx_regdate" />
+</table>

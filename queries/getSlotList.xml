@@ -1,0 +1,17 @@
+<query id="getSlotList" action="select">
+	<tables>
+		<table name="reservation_slot" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="resource_srl" var="resource_srl" required="true" />
+		<condition operation="more" column="slot_date" var="from_date" pipe="and" required="true" />
+		<condition operation="less" column="slot_date" var="to_date" pipe="and" required="true" />
+	</conditions>
+	<navigation>
+		<!-- 같은 날짜 안의 start_time 정렬은 호출부(PHP)에서 한다 -->
+		<index var="sort_index" default="slot_date" order="asc" />
+	</navigation>
+</query>

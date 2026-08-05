@@ -1,0 +1,12 @@
+<query id="getSlotCoverage" action="select">
+	<!-- 이 리소스의 슬롯이 어느 날짜까지 실체화되어 있는가 (생성기 조기 종료 판정용) -->
+	<tables>
+		<table name="reservation_slot" />
+	</tables>
+	<columns>
+		<column name="max(slot_date)" alias="max_date" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="resource_srl" var="resource_srl" required="true" />
+	</conditions>
+</query>

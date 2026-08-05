@@ -1,0 +1,15 @@
+<query id="insertLog" action="insert">
+	<tables>
+		<table name="reservation_log" />
+	</tables>
+	<columns>
+		<column name="log_srl" var="log_srl" notnull="notnull" />
+		<column name="booking_srl" var="booking_srl" notnull="notnull" />
+		<column name="action" var="action" notnull="notnull" />
+		<column name="before_status" var="before_status" />
+		<column name="after_status" var="after_status" />
+		<column name="actor_srl" var="actor_srl" default="0" />
+		<column name="memo" var="memo" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

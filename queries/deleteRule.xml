@@ -1,0 +1,8 @@
+<query id="deleteRule" action="delete">
+	<tables>
+		<table name="reservation_schedule_rule" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="rule_srl" var="rule_srl" required="true" />
+	</conditions>
+</query>

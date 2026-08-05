@@ -1,0 +1,26 @@
+<table name="reservation_resource">
+	<column name="resource_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="module_srl" type="bigint" notnull="notnull" default="0" index="idx_module_srl" />
+	<column name="title" type="varchar" size="250" notnull="notnull" />
+	<column name="summary" type="varchar" size="250" />
+	<column name="content" type="text" />
+	<column name="thumb" type="varchar" size="250" />
+	<!-- 슬롯 기본 정원. 1 = 1:1 예약, N = 클래스형 -->
+	<column name="capacity_default" type="int" notnull="notnull" default="1" />
+	<!-- 기본 이용시간(분) = 슬롯 간격의 기본값 -->
+	<column name="duration" type="int" notnull="notnull" default="60" />
+	<!-- 0 이면 무료 예약 -->
+	<column name="price" type="bigint" notnull="notnull" default="0" />
+	<column name="require_payment" type="char" size="1" notnull="notnull" default="N" />
+	<!-- 준비·정리 시간(분) -->
+	<column name="buffer_before" type="int" notnull="notnull" default="0" />
+	<column name="buffer_after" type="int" notnull="notnull" default="0" />
+	<!-- 며칠 뒤까지 / 몇 분 전까지 예약 가능 -->
+	<column name="max_advance_days" type="int" notnull="notnull" default="90" />
+	<column name="min_lead_minutes" type="int" notnull="notnull" default="60" />
+	<column name="cancel_deadline_hours" type="int" notnull="notnull" default="24" />
+	<column name="status" type="varchar" size="20" notnull="notnull" default="open" index="idx_status" />
+	<column name="list_order" type="bigint" notnull="notnull" default="0" index="idx_list_order" />
+	<column name="regdate" type="char" size="14" index="idx_regdate" />
+	<column name="last_update" type="char" size="14" />
+</table>

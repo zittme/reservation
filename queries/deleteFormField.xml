@@ -1,0 +1,8 @@
+<query id="deleteFormField" action="delete">
+	<tables>
+		<table name="reservation_form_field" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="field_srl" var="field_srl" required="true" />
+	</conditions>
+</query>

@@ -1,0 +1,8 @@
+<query id="deleteResource" action="delete">
+	<tables>
+		<table name="reservation_resource" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="resource_srl" var="resource_srl" required="true" />
+	</conditions>
+</query>
