@@ -13,7 +13,7 @@ use Zittme\Modules\Reservation\Controllers\Base;
 class Booking
 {
 	/**
-	 * 예약 생성 — ★ 유일한 생성 경로.
+	 * 예약 생성 — 유일한 생성 경로.
 	 *
 	 * 순서가 중요하다:
 	 *   1) 슬롯 원자 점유 (실패 = 마감)

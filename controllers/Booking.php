@@ -193,7 +193,7 @@ class Booking extends Base
 			return new \BaseObject(-1, 'msg_reservation_pay_unavailable');
 		}
 
-		// ★ 원자 점유 + 예약 생성
+		// 원자 점유 + 예약 생성
 		$hold_minutes = max(3, (int)($config->hold_minutes ?? 10));
 		$output = BookingModel::create((object)[
 			'slot_srl' => $slot_srl,

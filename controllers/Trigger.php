@@ -7,10 +7,10 @@ use Zittme\Modules\Reservation\Models\Booking;
 /**
  * zittme_pay 결제 통지 수신.
  *
- * ⚠️ 이 핸들러들은 PG 콜백 요청 안에서 실행된다 — 세션을 읽거나 쓰면 안 된다
+ * 주의: 이 핸들러들은 PG 콜백 요청 안에서 실행된다 — 세션을 읽거나 쓰면 안 된다
  *    (크로스사이트 콜백에서 세션을 건드리면 원래 창의 CSRF 토큰이 무효화된다, pitfall #57).
  *
- * ⚠️ eventHandler 는 conf/module.xml 선언만으로 동작하지 않는다.
+ * 주의: eventHandler 는 conf/module.xml 선언만으로 동작하지 않는다.
  *    모듈 설치/업데이트 1회 실행으로 DB triggers 에 등록해야 한다.
  */
 class Trigger extends Base

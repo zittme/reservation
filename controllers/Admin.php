@@ -12,7 +12,7 @@ use Zittme\Modules\Reservation\Models\Slot;
  * 예약은 "설정"이 아니라 일상 운영 업무가 중심이다. 대시보드·예약 관리·예약상품 관리를
  * 독립 페이지 세트로 제공한다. 디자인은 관리자 리디자인 토큰(Pretendard, #2677e3)을 따른다.
  *
- * ★ 수동 예약도 반드시 BookingModel::create 의 원자 점유 경로를 탄다.
+ * 수동 예약도 반드시 BookingModel::create 의 원자 점유 경로를 탄다.
  */
 class Admin extends Base
 {
@@ -697,7 +697,7 @@ class Admin extends Base
 	/**
 	 * 수동 예약 등록 (전화 예약 대행).
 	 *
-	 * ★ 관리자라고 점유 검사를 우회하지 않는다 — 같은 원자 경로.
+	 * 관리자라고 점유 검사를 우회하지 않는다 — 같은 원자 경로.
 	 */
 	public function procReservationAdminManualBooking()
 	{

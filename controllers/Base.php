@@ -13,7 +13,7 @@ use Zittme\Modules\Reservation\Models\Config as ConfigModel;
  * 이 모듈은 엔진 기본 제공이 아니라 스토어로 따로 배포하는 부가 모듈이다.
  * zittme_pay 가 없으면 결제 기능만 비활성되고 무료 예약은 정상 동작해야 한다.
  *
- * ★ 동시성 원칙: 슬롯 점유의 단일 진실 공급원은 reservation_slot 행이며,
+ * 동시성 원칙: 슬롯 점유의 단일 진실 공급원은 reservation_slot 행이며,
  *   점유·반환은 오직 조건부 UPDATE(affected rows 판정)로만 한다.
  */
 class Base extends \ModuleObject
