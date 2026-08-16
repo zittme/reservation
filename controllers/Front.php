@@ -18,16 +18,22 @@ class Front extends Base
 	protected function getSkinPath(): string
 	{
 		$skin = (string)($this->module_info->skin ?? '');
+		// 기본 스킨 위임이면 사이트 기본 디자인 값을 따른다 (테마 적용이 여길 바꾼다)
 		if ($skin === '' || $skin === '/USE_DEFAULT/')
 		{
-			$skin = 'default';
+			$skin = (string)(\ModuleModel::getModuleDefaultSkin('reservation', 'P') ?: 'default');
 		}
-		$skin = preg_replace('/[^A-Za-z0-9_-]/', '', $skin);
-		if ($skin === '' || !is_dir($this->module_path . 'skins/' . $skin))
+		// 일반 이름과 테마 결합명('테마|@|스킨')만 허용 — 경로 조작 방지
+		if (!preg_match('/^[A-Za-z0-9_-]+(\|@\|[A-Za-z0-9_-]+)?$/', $skin))
 		{
 			$skin = 'default';
 		}
-		return $this->module_path . 'skins/' . $skin . '/';
+		$path = \Zittme\Framework\Theme::resolveSkinPath($this->module_path, $skin, 'skins');
+		if (!is_dir($path))
+		{
+			$path = $this->module_path . 'skins/default/';
+		}
+		return rtrim($path, '/') . '/';
 	}
 
 	/**

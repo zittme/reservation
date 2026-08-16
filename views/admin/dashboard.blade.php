@@ -1,5 +1,6 @@
 @include('_tabs')
 
+@if (Context::get('zmc_console'))
 <div class="rsva">
 	<div class="rsva-cards">
 		<div class="rsva-card"><b>{{ number_format($stat_today) }}</b><span>오늘 예약</span></div>
@@ -31,3 +32,14 @@
 		@endif
 	</div>
 </div>
+@else
+{{-- 코어 관리자에서는 콘솔 안내만 보여준다. 운영은 전용 콘솔로 일원화 --}}
+<div class="rsva">
+	<div class="rsva-panel">
+		<h3>운영 안내</h3>
+		<p style="margin:0;font-size:13px;color:#6b7684;line-height:1.8">
+			예약 접수·자원·스케줄 등 모든 운영은 위의 <strong>전용 콘솔</strong>에서 합니다.
+		</p>
+	</div>
+</div>
+@endif

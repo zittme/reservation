@@ -27,15 +27,16 @@
 
 		<!-- 관리자: 전용 운영 화면 세트 -->
 		<action name="dispReservationAdminDashboard" class="Controllers\Admin" admin-index="true" menu-name="reservation" menu-index="true" permission="manager" />
-		<action name="dispReservationAdminBookings" class="Controllers\Admin" menu-name="reservation" permission="manager" />
-		<action name="dispReservationAdminResources" class="Controllers\Admin" menu-name="reservation" permission="manager" />
-		<action name="dispReservationAdminResourceEdit" class="Controllers\Admin" menu-name="reservation" permission="manager" />
-		<action name="dispReservationAdminSchedule" class="Controllers\Admin" menu-name="reservation" permission="manager" />
-		<action name="dispReservationAdminForms" class="Controllers\Admin" menu-name="reservation" permission="manager" />
-		<action name="dispReservationAdminStats" class="Controllers\Admin" menu-name="reservation" permission="manager" />
-		<action name="dispReservationAdminConfig" class="Controllers\Admin" menu-name="reservation" permission="manager" />
+		<action name="dispReservationAdminBookings" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminResources" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminResourceEdit" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminSchedule" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminForms" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminStats" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminConfig" class="Controllers\Admin" permission="manager" />
 
 		<action name="procReservationAdminInsertConfig" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminUpdateSkin" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminInsertResource" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminDeleteResource" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminInsertRule" class="Controllers\Admin" permission="manager" />

@@ -260,7 +260,43 @@ class Admin extends Base
 	public function dispReservationAdminConfig()
 	{
 		\Context::set('pay_available', self::isPayAvailable());
+
+		// 스킨 — 커머스 콘솔과 같은 방식. 기본값(/USE_DEFAULT/)이면 사이트 기본 디자인을 따른다.
+		$instance = self::getDefaultInstance();
+		$module_info = $instance ? \ModuleModel::getModuleInfoByMid($instance->mid) : null;
+		\Context::set('rsv_instance', $module_info);
+		\Context::set('rsv_skins', \ModuleModel::getSkins(\RX_BASEDIR . 'modules/reservation') ?: []);
+		\Context::set('rsv_default_skin', (string)(\ModuleModel::getModuleDefaultSkin('reservation', 'P') ?: 'default'));
 		$this->renderView('config', 'config');
+	}
+
+	/**
+	 * 스킨 저장 — 기본 인스턴스(mid)의 skin 갱신.
+	 */
+	public function procReservationAdminUpdateSkin()
+	{
+		$instance = self::getDefaultInstance();
+		$module_info = $instance ? \ModuleModel::getModuleInfoByMid($instance->mid) : null;
+		if (!$module_info || empty($module_info->module_srl))
+		{
+			return new \BaseObject(-1, 'msg_invalid_request');
+		}
+
+		$skin = preg_replace('/[^A-Za-z0-9_\-.\/|@]/', '', (string)\Context::get('skin'));
+		if ($skin !== '')
+		{
+			$module_info->skin = $skin;
+			// is_skin_fix 가 N 이면 코어가 저장된 스킨을 무시하고 기본 디자인을 따른다
+			$module_info->is_skin_fix = ($skin === '/USE_DEFAULT/') ? 'N' : 'Y';
+		}
+		$module_info->isMenuCreate = false;
+
+		$output = \ModuleController::getInstance()->updateModule($module_info);
+		if (!$output->toBool())
+		{
+			return $output;
+		}
+		$this->setRedirectUrl(\Context::get('success_return_url') ?: getNotEncodedUrl('', 'module', 'admin', 'act', 'dispReservationAdminConfig'));
 	}
 
 	// ────────────────────────── 처리 ──────────────────────────

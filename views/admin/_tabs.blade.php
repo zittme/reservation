@@ -163,13 +163,5 @@ $zmc_current = $zmc_active_alias[$zmc_page] ?? $zmc_page;
 </script>
 @endif
 
-<ul class="x_nav x_nav-tabs rsva">
-	<li @if($rsv_tab === 'dashboard') class="x_active" @endif><a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminDashboard') }}">{{ $lang->rsv_tab_dashboard }}</a></li>
-	<li @if($rsv_tab === 'bookings') class="x_active" @endif><a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminBookings') }}">{{ $lang->rsv_tab_bookings }}</a></li>
-	<li @if($rsv_tab === 'resources') class="x_active" @endif><a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminResources') }}">{{ $lang->rsv_tab_resources }}</a></li>
-	<li @if($rsv_tab === 'schedule') class="x_active" @endif><a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminSchedule') }}">{{ $lang->rsv_tab_schedule }}</a></li>
-	<li @if($rsv_tab === 'forms') class="x_active" @endif><a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminForms') }}">{{ $lang->rsv_tab_forms }}</a></li>
-	<li @if($rsv_tab === 'stats') class="x_active" @endif><a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminStats') }}">{{ $lang->rsv_tab_stats }}</a></li>
-	<li @if($rsv_tab === 'config') class="x_active" @endif><a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminConfig') }}">{{ $lang->rsv_tab_config }}</a></li>
-</ul>
+{{-- 관리자 탭 제거: 운영 화면은 전용 콘솔에서만 제공한다 --}}
 @endif

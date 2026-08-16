@@ -235,6 +235,7 @@ class Booking extends Base
 			$pay = \Zittme\Modules\Zittme_pay\PayService::createOrder([
 				'source_module' => 'reservation',
 				'source_srl' => (int)$booking->booking_srl,
+				'source_code' => (string)$booking->booking_code,
 				'member_srl' => $member_srl,
 				'amount' => $amount,
 				'title' => sprintf('%s %s %s', $resource->title, $slot->slot_date, $slot->start_time),

@@ -46,4 +46,23 @@
 
 		<button type="submit" class="rsva-btn rsva-btn-primary">저장</button>
 	</form>
+
+	<div class="rsva-panel" style="margin-top:16px">
+		<h3>스킨 설정</h3>
+		<form action="./" method="post" style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
+			<input type="hidden" name="module" value="reservation" />
+			<input type="hidden" name="act" value="procReservationAdminUpdateSkin" />
+			<div style="min-width:260px">
+				<label>예약 화면 스킨</label>
+				<select name="skin" style="width:100%">
+					<option value="/USE_DEFAULT/" @if(($rsv_instance->skin ?? '') === '/USE_DEFAULT/' || ($rsv_instance->skin ?? '') === '') selected @endif>기본 디자인 따름 (현재: {{ $rsv_default_skin }})</option>
+					@foreach ($rsv_skins as $sk)
+					<option value="{{ $sk->skin }}" @if(($rsv_instance->skin ?? '') === $sk->skin) selected @endif>{{ $sk->title ?: $sk->skin }}</option>
+					@endforeach
+				</select>
+			</div>
+			<div><button type="submit" class="rsva-btn rsva-btn-primary">스킨 적용</button></div>
+		</form>
+		<p style="margin:8px 0 0;font-size:12.5px;color:#8a94a4">기본 디자인 따름으로 두면 사이트 디자인 설정(테마 적용 포함)의 스킨을 그대로 씁니다.</p>
+	</div>
 </div>
