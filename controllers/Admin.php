@@ -267,6 +267,11 @@ class Admin extends Base
 		\Context::set('rsv_instance', $module_info);
 		\Context::set('rsv_skins', \ModuleModel::getSkins(\RX_BASEDIR . 'modules/reservation') ?: []);
 		\Context::set('rsv_default_skin', (string)(\ModuleModel::getModuleDefaultSkin('reservation', 'P') ?: 'default'));
+
+		// 레이아웃 — 스킨과 한자리에서 고르게 둔다. 모듈 관리 화면까지 찾아가지 않아도 된다
+		$layout_model = getModel('layout');
+		\Context::set('rsv_layouts', $layout_model->getLayoutList(0, 'P') ?: []);
+		\Context::set('rsv_mlayouts', $layout_model->getLayoutList(0, 'M') ?: []);
 		$this->renderView('config', 'config');
 	}
 
@@ -288,6 +293,18 @@ class Admin extends Base
 			$module_info->skin = $skin;
 			// is_skin_fix 가 N 이면 코어가 저장된 스킨을 무시하고 기본 디자인을 따른다
 			$module_info->is_skin_fix = ($skin === '/USE_DEFAULT/') ? 'N' : 'Y';
+		}
+
+		// 레이아웃 — -1 은 사이트 기본, -2 는 모바일에서 PC 설정을 따름
+		$layout_srl = \Context::get('layout_srl');
+		if ($layout_srl !== null && $layout_srl !== '')
+		{
+			$module_info->layout_srl = (int)$layout_srl;
+		}
+		$mlayout_srl = \Context::get('mlayout_srl');
+		if ($mlayout_srl !== null && $mlayout_srl !== '')
+		{
+			$module_info->mlayout_srl = (int)$mlayout_srl;
 		}
 		$module_info->isMenuCreate = false;
 

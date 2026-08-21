@@ -29,6 +29,17 @@ class Front extends Base
 			$skin = 'default';
 		}
 		$path = \Zittme\Framework\Theme::resolveSkinPath($this->module_path, $skin, 'skins');
+		if (!is_dir($path) && strpos($skin, \Zittme\Framework\Theme::SEPARATOR) === false)
+		{
+			foreach (array_keys(\Zittme\Framework\Theme::getModuleSkins('reservation', 'skins')) as $combined)
+			{
+				if (substr($combined, -strlen(\Zittme\Framework\Theme::SEPARATOR . $skin)) === \Zittme\Framework\Theme::SEPARATOR . $skin)
+				{
+					$path = \Zittme\Framework\Theme::resolveSkinPath($this->module_path, $combined, 'skins');
+					break;
+				}
+			}
+		}
 		if (!is_dir($path))
 		{
 			$path = $this->module_path . 'skins/default/';

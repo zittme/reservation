@@ -56,12 +56,31 @@
 				<label>예약 화면 스킨</label>
 				<select name="skin" style="width:100%">
 					<option value="/USE_DEFAULT/" @if(($rsv_instance->skin ?? '') === '/USE_DEFAULT/' || ($rsv_instance->skin ?? '') === '') selected @endif>기본 디자인 따름 (현재: {{ $rsv_default_skin }})</option>
-					@foreach ($rsv_skins as $sk)
-					<option value="{{ $sk->skin }}" @if(($rsv_instance->skin ?? '') === $sk->skin) selected @endif>{{ $sk->title ?: $sk->skin }}</option>
+					@foreach ($rsv_skins as $sk_name => $sk)
+					<option value="{{ $sk_name }}" @if(($rsv_instance->skin ?? '') === $sk_name) selected @endif>{{ $sk->title ?: $sk_name }}</option>
 					@endforeach
 				</select>
 			</div>
-			<div><button type="submit" class="rsva-btn rsva-btn-primary">스킨 적용</button></div>
+			<div style="min-width:260px">
+				<label>레이아웃 (PC)</label>
+				<select name="layout_srl" style="width:100%">
+					<option value="-1" @if((int)($rsv_instance->layout_srl ?? -1) === -1) selected @endif>사이트 기본 레이아웃 따름</option>
+					@foreach ($rsv_layouts as $lo)
+					<option value="{{ $lo->layout_srl }}" @if((int)($rsv_instance->layout_srl ?? -1) === (int)$lo->layout_srl) selected @endif>{{ $lo->title ?: $lo->layout }}</option>
+					@endforeach
+				</select>
+			</div>
+			<div style="min-width:260px">
+				<label>레이아웃 (모바일)</label>
+				<select name="mlayout_srl" style="width:100%">
+					<option value="-1" @if((int)($rsv_instance->mlayout_srl ?? -1) === -1) selected @endif>사이트 기본 레이아웃 따름</option>
+					<option value="-2" @if((int)($rsv_instance->mlayout_srl ?? -1) === -2) selected @endif>PC 설정을 그대로 사용</option>
+					@foreach ($rsv_mlayouts as $lo)
+					<option value="{{ $lo->layout_srl }}" @if((int)($rsv_instance->mlayout_srl ?? -1) === (int)$lo->layout_srl) selected @endif>{{ $lo->title ?: $lo->layout }}</option>
+					@endforeach
+				</select>
+			</div>
+			<div><button type="submit" class="rsva-btn rsva-btn-primary">화면 설정 저장</button></div>
 		</form>
 		<p style="margin:8px 0 0;font-size:12.5px;color:#8a94a4">기본 디자인 따름으로 두면 사이트 디자인 설정(테마 적용 포함)의 스킨을 그대로 씁니다.</p>
 	</div>
