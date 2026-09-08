@@ -1,0 +1,15 @@
+<table name="reservation_staff_schedule">
+	<!-- 담당자 개인 근무 요일과 시간. 개인 휴무는 reservation_holiday 의 staff_srl 로 적는다 -->
+	<column name="rule_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="staff_srl" type="bigint" notnull="notnull" default="0" index="idx_staff_srl" />
+	<!-- 0 = 일요일 ... 6 = 토요일 -->
+	<column name="weekday" type="int" notnull="notnull" default="0" />
+	<!-- HH:MM -->
+	<column name="start_time" type="varchar" size="5" notnull="notnull" />
+	<column name="end_time" type="varchar" size="5" notnull="notnull" />
+	<!-- YYYYMMDD. 비우면 기간 제한 없음 -->
+	<column name="valid_from" type="char" size="8" />
+	<column name="valid_to" type="char" size="8" />
+	<column name="is_active" type="char" size="1" notnull="notnull" default="Y" />
+	<column name="regdate" type="char" size="14" />
+</table>

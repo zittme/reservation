@@ -1,0 +1,16 @@
+<query id="insertNotifyLog" action="insert">
+	<tables>
+		<table name="reservation_notify_log" />
+	</tables>
+	<columns>
+		<column name="log_srl" var="log_srl" notnull="notnull" />
+		<column name="module_srl" var="module_srl" default="0" />
+		<column name="booking_srl" var="booking_srl" default="0" />
+		<column name="channel" var="channel" default="mail" />
+		<column name="template" var="template" default="" />
+		<column name="recipient" var="recipient" />
+		<column name="status" var="status" default="sent" />
+		<column name="message" var="message" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

@@ -1,0 +1,14 @@
+<table name="reservation_notify_log">
+	<column name="log_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="module_srl" type="bigint" notnull="notnull" default="0" index="idx_module_srl" />
+	<column name="booking_srl" type="bigint" notnull="notnull" default="0" index="idx_booking_srl" />
+	<!-- mail / sms / alimtalk -->
+	<column name="channel" type="varchar" size="20" notnull="notnull" default="mail" />
+	<!-- 어떤 알림인지. booked, confirmed, remind, cancelled, staff_new 등 -->
+	<column name="template" type="varchar" size="40" notnull="notnull" default="" index="idx_template" />
+	<column name="recipient" type="varchar" size="250" />
+	<!-- sent / failed / skipped -->
+	<column name="status" type="varchar" size="20" notnull="notnull" default="sent" />
+	<column name="message" type="varchar" size="250" />
+	<column name="regdate" type="char" size="14" index="idx_regdate" />
+</table>

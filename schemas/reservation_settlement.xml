@@ -1,0 +1,20 @@
+<table name="reservation_settlement">
+	<column name="settlement_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="module_srl" type="bigint" notnull="notnull" default="0" index="idx_module_srl" />
+	<column name="staff_srl" type="bigint" notnull="notnull" default="0" index="idx_staff_srl" />
+	<!-- YYYYMMDD -->
+	<column name="period_from" type="char" size="8" notnull="notnull" />
+	<column name="period_to" type="char" size="8" notnull="notnull" />
+	<column name="booking_count" type="int" notnull="notnull" default="0" />
+	<!-- 매출 합 -->
+	<column name="gross_amount" type="bigint" notnull="notnull" default="0" />
+	<!-- 담당자 몫과 매장 몫. 합은 gross_amount 다 -->
+	<column name="share_amount" type="bigint" notnull="notnull" default="0" />
+	<column name="store_amount" type="bigint" notnull="notnull" default="0" />
+	<!-- draft = 집계중 / confirmed = 확정 / paid = 지급완료 -->
+	<column name="status" type="varchar" size="20" notnull="notnull" default="draft" index="idx_status" />
+	<column name="memo" type="varchar" size="250" />
+	<column name="regdate" type="char" size="14" index="idx_regdate" />
+	<column name="confirmed_date" type="char" size="14" />
+	<column name="paid_date" type="char" size="14" />
+</table>

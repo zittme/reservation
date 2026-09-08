@@ -4,7 +4,20 @@
 	<column name="booking_code" type="varchar" size="30" notnull="notnull" unique="unique_booking_code" />
 	<column name="module_srl" type="bigint" notnull="notnull" default="0" index="idx_module_srl" />
 	<column name="resource_srl" type="bigint" notnull="notnull" index="idx_resource_srl" />
+	<!-- 담당자 모드에서는 0 이다. 슬롯 모드에서만 쓴다 -->
 	<column name="slot_srl" type="bigint" notnull="notnull" />
+	<!-- 담당자 모드의 배정 담당자. 0 = 슬롯 모드이거나 미배정 -->
+	<column name="staff_srl" type="bigint" notnull="notnull" default="0" index="idx_staff_srl" />
+	<!--
+	  YYYYMMDD. 이용일. 두 방식 모두에서 채운다.
+	  슬롯 모드는 슬롯 날짜를, 담당자 모드는 시작 시각의 날짜를 적는다.
+	  목록과 통계는 이 칼럼으로만 거른다. 슬롯 조인에 기대면 담당자 모드가 빠진다.
+	-->
+	<column name="service_date" type="char" size="8" index="idx_service_date" />
+	<!-- YYYYMMDDHHIISS. 담당자 모드의 실제 시술 구간 -->
+	<column name="start_datetime" type="char" size="14" index="idx_start_datetime" />
+	<column name="end_datetime" type="char" size="14" />
+	<column name="duration_minutes" type="int" notnull="notnull" default="0" />
 	<!-- 0 = 비회원 -->
 	<column name="member_srl" type="bigint" notnull="notnull" default="0" index="idx_member_srl" />
 	<column name="booker_name" type="varchar" size="80" notnull="notnull" />
@@ -14,7 +27,22 @@
 	<column name="guest_password" type="varchar" size="128" />
 	<!-- 정원에서 차감되는 인원 수 -->
 	<column name="person_count" type="int" notnull="notnull" default="1" />
+	<!-- 시술 총액. 예약 시점 값을 그대로 박아 둔다 -->
 	<column name="amount" type="bigint" notnull="notnull" default="0" />
+	<!-- 미리 받은 금액. 예약금이면 총액보다 작다 -->
+	<column name="paid_amount" type="bigint" notnull="notnull" default="0" />
+	<!-- 쿠폰·등급 할인액. amount 에서 이미 빠진 금액이 아니라 따로 적어 둔다 -->
+	<column name="discount_amount" type="bigint" notnull="notnull" default="0" />
+	<!-- 이 예약에 쓴 쿠폰 발급 건 (0 = 안 씀) -->
+	<column name="coupon_issue_srl" type="bigint" notnull="notnull" default="0" index="idx_coupon_issue_srl" />
+	<!-- 이 예약에 쓴 적립금 -->
+	<column name="credit_used" type="bigint" notnull="notnull" default="0" />
+	<!-- 방문 완료로 적립해 준 금액. 취소하면 이만큼 회수한다 -->
+	<column name="credit_earned" type="bigint" notnull="notnull" default="0" />
+	<!-- 예약 시점의 배분율. 만분율 정수. -1 이면 정산 대상이 아니다 -->
+	<column name="share_rate_snapshot" type="int" notnull="notnull" default="-1" />
+	<!-- 정산 회차 연결. 0 이면 아직 정산에 들어가지 않았다 -->
+	<column name="settlement_srl" type="bigint" notnull="notnull" default="0" index="idx_settlement_srl" />
 	<!-- zittme_pay 주문 연결 (0 = 무료 예약) -->
 	<column name="pay_order_srl" type="bigint" notnull="notnull" default="0" index="idx_pay_order_srl" />
 	<!-- hold(결제 대기) / pending(무통장 입금 대기) / confirmed / cancelled / noshow / done / expired -->

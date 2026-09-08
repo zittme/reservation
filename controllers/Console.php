@@ -19,8 +19,13 @@ class Console extends Admin
 		'bookings' => 'dispReservationAdminBookings',
 		'resources' => 'dispReservationAdminResources',
 		'resource_edit' => 'dispReservationAdminResourceEdit',
+		'staff' => 'dispReservationAdminStaff',
+		'staff_edit' => 'dispReservationAdminStaffEdit',
 		'schedule' => 'dispReservationAdminSchedule',
+		'settlements' => 'dispReservationAdminSettlements',
+		'settlement_view' => 'dispReservationAdminSettlementView',
 		'forms' => 'dispReservationAdminForms',
+		'membership' => 'dispReservationAdminMembership',
 		'stats' => 'dispReservationAdminStats',
 		'config' => 'dispReservationAdminConfig',
 	];

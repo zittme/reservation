@@ -2,8 +2,14 @@
 
 namespace Zittme\Modules\Reservation\Controllers;
 
+use Zittme\Modules\Reservation\Models\Availability;
 use Zittme\Modules\Reservation\Models\Booking as BookingModel;
+use Zittme\Modules\Reservation\Models\BranchLink;
+use Zittme\Modules\Reservation\Models\Coupon;
+use Zittme\Modules\Reservation\Models\Credit;
+use Zittme\Modules\Reservation\Models\Grade;
 use Zittme\Modules\Reservation\Models\Slot;
+use Zittme\Modules\Reservation\Models\Staff as StaffModel;
 
 /**
  * 프론트 화면 (disp).
@@ -95,13 +101,94 @@ class Front extends Base
 			return $resource;
 		}
 
-		// 슬롯을 미리 실체화해 둔다 (규칙이 새로 생겼을 수 있으므로 조회 시 보충 생성)
-		Slot::generate($resource);
+		$is_staff_mode = (string)($resource->booking_mode ?? 'slot') === 'staff';
+
+		// 담당자 모드는 슬롯을 쓰지 않는다. 만들면 쓰지도 않을 행만 쌓인다
+		if (!$is_staff_mode)
+		{
+			// 슬롯을 미리 실체화해 둔다 (규칙이 새로 생겼을 수 있으므로 조회 시 보충 생성)
+			Slot::generate($resource);
+		}
+		else
+		{
+			$module_srl = self::instanceSrl();
+			$branch_srl = max(0, (int)\Context::get('branch_srl'));
+			$branches = BranchLink::getList();
+
+			// 지점이 한 곳뿐이면 고르는 단계를 건너뛴다
+			if ($branch_srl <= 0 && count($branches) === 1)
+			{
+				$branch_srl = BranchLink::getSoleBranchSrl();
+			}
+
+			$staff_list = StaffModel::getListForService($module_srl, (int)$resource->resource_srl, $branch_srl);
+
+			// 담당자마다 값과 소요시간이 다르다. 화면에서 계산하지 않게 미리 풀어 둔다
+			foreach ($staff_list as $person)
+			{
+				$resolved = StaffModel::resolveService($resource, $person);
+				$person->resolved_price = (int)$resolved['price'];
+				$person->resolved_duration = (int)$resolved['duration'];
+				$person->branch_name = isset($branches[(int)$person->branch_srl]) ? (string)$branches[(int)$person->branch_srl]->name : '';
+				$person->initial = mb_substr((string)$person->name, 0, 1);
+			}
+
+			\Context::set('staff_list', array_values($staff_list));
+			\Context::set('branches', array_values($branches));
+			\Context::set('branch_srl', $branch_srl);
+			\Context::set('allow_any_staff', (string)(self::config()->allow_any_staff ?? 'Y') === 'Y');
+		}
 
 		\Context::set('resource', $resource);
+		\Context::set('is_staff_mode', $is_staff_mode);
 		\Context::set('rsv_config', self::config());
+		$this->addResourceStructuredData($resource);
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('calendar');
+	}
+
+	/**
+	 * 예약 자원의 구조화 데이터. 코어가 head 에 한 번에 출력한다.
+	 *
+	 * 날짜가 정해진 행사가 아니라 예약을 받는 서비스이므로 Event 가 아니라 Service 로 낸다.
+	 */
+	protected function addResourceStructuredData(object $resource): void
+	{
+		if (!method_exists('\Context', 'addStructuredData'))
+		{
+			return;
+		}
+
+		$image = trim((string)($resource->thumb ?? ''));
+		if ($image !== '' && !preg_match('#^https?://#', $image))
+		{
+			$image = \Zittme\Framework\URL::getCurrentDomainURL('/') . ltrim(preg_replace('#^\./#', '', $image), '/');
+		}
+
+		$price = (int)($resource->price ?? 0);
+		$offer = [];
+		if ($price > 0)
+		{
+			$offer = [
+				'@type' => 'Offer',
+				'price' => (string)$price,
+				'priceCurrency' => 'KRW',
+				'availability' => 'https://schema.org/InStock',
+				'url' => \Context::getCanonicalURL() ?: \Zittme\Framework\URL::getCurrentURL(),
+			];
+		}
+
+		\Context::addStructuredData('Service', [
+			'name' => trim((string)($resource->title ?? '')),
+			'description' => trim(utf8_normalize_spaces(strip_tags((string)($resource->summary ?? '')))),
+			'image' => $image,
+			'category' => trim((string)($resource->category ?? '')),
+			'provider' => [
+				'@type' => 'Organization',
+				'name' => trim((string)\Context::getSiteTitle()),
+			],
+			'offers' => $offer,
+		]);
 	}
 
 	/**
@@ -115,11 +202,45 @@ class Front extends Base
 			return $resource;
 		}
 
-		$slot_srl = (int)\Context::get('slot_srl');
-		$slot = Slot::get($slot_srl);
-		if (!$slot || (int)$slot->resource_srl !== (int)$resource->resource_srl)
+		$is_staff_mode = (string)($resource->booking_mode ?? 'slot') === 'staff';
+		$slot = null;
+		$staff = null;
+		$pick_date = '';
+		$pick_time = '';
+		$price = (int)($resource->price ?? 0);
+		$duration = (int)($resource->duration ?? 0);
+
+		if ($is_staff_mode)
 		{
-			return new \BaseObject(-1, 'msg_reservation_no_slot');
+			$pick_date = preg_replace('/\D/', '', (string)\Context::get('date'));
+			$pick_time = trim((string)\Context::get('start_time'));
+			if (strlen($pick_date) !== 8 || Availability::toMinutes($pick_time) === null)
+			{
+				return new \BaseObject(-1, 'msg_invalid_request');
+			}
+
+			$staff = StaffModel::get((int)\Context::get('staff_srl'));
+			if ($staff)
+			{
+				$resolved = StaffModel::resolveService($resource, $staff);
+				$price = (int)$resolved['price'];
+				$duration = (int)$resolved['duration'];
+				$staff->branch_name = '';
+				$branch = BranchLink::get((int)$staff->branch_srl);
+				if ($branch)
+				{
+					$staff->branch_name = (string)$branch->name;
+				}
+			}
+		}
+		else
+		{
+			$slot_srl = (int)\Context::get('slot_srl');
+			$slot = Slot::get($slot_srl);
+			if (!$slot || (int)$slot->resource_srl !== (int)$resource->resource_srl)
+			{
+				return new \BaseObject(-1, 'msg_reservation_no_slot');
+			}
 		}
 
 		$logged_info = \Context::get('logged_info');
@@ -127,10 +248,54 @@ class Front extends Base
 
 		\Context::set('resource', $resource);
 		\Context::set('slot', $slot);
+		\Context::set('is_staff_mode', $is_staff_mode);
+		\Context::set('staff', $staff);
+		\Context::set('pick_date', $pick_date);
+		\Context::set('pick_time', $pick_time);
+		\Context::set('pick_price', $price);
+		\Context::set('pick_duration', $duration);
 		\Context::set('form_fields', Booking::getFormFields((int)$resource->resource_srl));
 		\Context::set('rsv_config', $config);
 		\Context::set('is_member', $logged_info && $logged_info->member_srl ? true : false);
-		\Context::set('need_pay', ($resource->require_payment ?? 'N') === 'Y' && (int)$resource->price > 0);
+		/* 결제 방식이 있으면 그쪽을 따르고, 그 칸이 없던 시절의 자원은 옛 표시를 본다 */
+		$pay_mode = (string)($resource->pay_mode ?? 'none');
+		if ($pay_mode === 'none' && ($resource->require_payment ?? 'N') === 'Y')
+		{
+			$pay_mode = 'full';
+		}
+
+		$upfront = 0;
+		if ($pay_mode === 'full')
+		{
+			$upfront = $price;
+		}
+		elseif ($pay_mode === 'deposit')
+		{
+			$upfront = min($price, max(0, (int)($resource->deposit_amount ?? 0)));
+		}
+
+		// 혜택. 회원이 아니면 계산할 것이 없다
+		$member_srl = ($logged_info && $logged_info->member_srl) ? (int)$logged_info->member_srl : 0;
+		$grade = $member_srl > 0 ? Grade::getForMember($member_srl) : null;
+		$grade_off = $member_srl > 0 ? ($price - Grade::applyDiscount($price, Grade::discountFor($member_srl))) : 0;
+		$after_grade = max(0, $price - $grade_off);
+
+		\Context::set('my_grade', $grade);
+		\Context::set('grade_discount', $grade_off);
+		\Context::set('credit_enabled', (string)($config->credit_enabled ?? 'N') === 'Y');
+		\Context::set('coupon_enabled', (string)($config->coupon_enabled ?? 'N') === 'Y');
+		\Context::set('credit_balance', $member_srl > 0 ? Credit::balanceOf($member_srl) : 0);
+		\Context::set('credit_usable', $member_srl > 0 ? Credit::usableFor($member_srl, $after_grade) : 0);
+		\Context::set('my_coupons', ($member_srl > 0 && (string)($config->coupon_enabled ?? 'N') === 'Y')
+			? Coupon::listUsableForMember($member_srl, $after_grade, (int)$resource->resource_srl)
+			: []);
+
+		// 예약금은 할인 뒤 금액을 기준으로 다시 잡는다. 화면과 서버가 다른 값을 말하면 안 된다
+		$upfront = min($after_grade, $upfront);
+
+		\Context::set('pay_mode', $pay_mode);
+		\Context::set('upfront_amount', $upfront);
+		\Context::set('need_pay', $upfront > 0);
 		\Context::set('pay_available', self::isPayAvailable());
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('form');
@@ -222,6 +387,10 @@ class Front extends Base
 
 		\Context::set('is_member', $member_srl > 0);
 		\Context::set('bookings', $bookings);
+		\Context::set('my_grade', $member_srl > 0 ? Grade::getForMember($member_srl) : null);
+		\Context::set('credit_balance', $member_srl > 0 ? Credit::balanceOf($member_srl) : 0);
+		\Context::set('credit_logs', $member_srl > 0 ? Credit::getLogs($member_srl, 20) : []);
+		\Context::set('my_coupons', $member_srl > 0 ? Coupon::listMine($member_srl) : []);
 		\Context::set('rsv_config', self::config());
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('my');

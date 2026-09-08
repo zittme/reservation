@@ -1,0 +1,25 @@
+<table name="reservation_coupon">
+	<!-- 쿠폰 정의. code 가 있으면 예약서에서 코드 입력으로 사용, 없으면 관리자·등급 발급 전용 -->
+	<column name="coupon_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="module_srl" type="bigint" notnull="notnull" default="0" index="idx_module_srl" />
+	<column name="title" type="varchar" size="120" notnull="notnull" />
+	<column name="code" type="varchar" size="40" index="idx_code" />
+	<!-- fixed(정액) / percent(정률) -->
+	<column name="discount_type" type="varchar" size="10" notnull="notnull" default="fixed" />
+	<column name="discount_value" type="bigint" notnull="notnull" default="0" />
+	<!-- 정률일 때 최대 할인액 (0 = 제한 없음) -->
+	<column name="max_discount" type="bigint" notnull="notnull" default="0" />
+	<!-- 최소 시술 금액 -->
+	<column name="min_amount" type="bigint" notnull="notnull" default="0" />
+	<!-- 이 시술에서만 쓸 수 있다 (0 = 전체) -->
+	<column name="resource_srl" type="bigint" notnull="notnull" default="0" index="idx_resource_srl" />
+	<column name="use_start" type="char" size="14" />
+	<column name="use_end" type="char" size="14" />
+	<!-- 회원 1인당 사용 가능 횟수 -->
+	<column name="per_member" type="int" notnull="notnull" default="1" />
+	<!-- 코드 쿠폰 전체 사용 한도 (0 = 무제한) -->
+	<column name="total_limit" type="int" notnull="notnull" default="0" />
+	<column name="used_count" type="int" notnull="notnull" default="0" />
+	<column name="status" type="char" size="1" notnull="notnull" default="Y" />
+	<column name="regdate" type="char" size="14" index="idx_regdate" />
+</table>

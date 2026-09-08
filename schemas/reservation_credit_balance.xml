@@ -1,0 +1,6 @@
+<table name="reservation_credit_balance">
+	<!-- 회원별 적립금 잔액 — 사용 차감은 balance >= n 조건부 UPDATE 원자 경로로만 -->
+	<column name="member_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="balance" type="bigint" notnull="notnull" default="0" />
+	<column name="upddate" type="char" size="14" />
+</table>

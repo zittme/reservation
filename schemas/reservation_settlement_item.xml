@@ -1,0 +1,13 @@
+<table name="reservation_settlement_item">
+	<!-- 정산에 들어간 예약 한 건. 확정 시점의 금액과 배분율을 그대로 박아 둔다 -->
+	<column name="item_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="settlement_srl" type="bigint" notnull="notnull" default="0" index="idx_settlement_srl" />
+	<column name="booking_srl" type="bigint" notnull="notnull" default="0" index="idx_booking_srl" />
+	<column name="resource_srl" type="bigint" notnull="notnull" default="0" />
+	<column name="amount" type="bigint" notnull="notnull" default="0" />
+	<!-- 만분율 정수 -->
+	<column name="share_rate" type="int" notnull="notnull" default="0" />
+	<column name="share_amount" type="bigint" notnull="notnull" default="0" />
+	<column name="service_date" type="char" size="8" />
+	<column name="regdate" type="char" size="14" />
+</table>

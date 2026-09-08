@@ -1,0 +1,21 @@
+<query id="insertSettlement" action="insert">
+	<tables>
+		<table name="reservation_settlement" />
+	</tables>
+	<columns>
+		<column name="settlement_srl" var="settlement_srl" notnull="notnull" />
+		<column name="module_srl" var="module_srl" default="0" />
+		<column name="staff_srl" var="staff_srl" notnull="notnull" />
+		<column name="period_from" var="period_from" notnull="notnull" />
+		<column name="period_to" var="period_to" notnull="notnull" />
+		<column name="booking_count" var="booking_count" default="0" />
+		<column name="gross_amount" var="gross_amount" default="0" />
+		<column name="share_amount" var="share_amount" default="0" />
+		<column name="store_amount" var="store_amount" default="0" />
+		<column name="status" var="status" default="draft" />
+		<column name="memo" var="memo" />
+		<column name="regdate" var="regdate" />
+		<column name="confirmed_date" var="confirmed_date" />
+		<column name="paid_date" var="paid_date" />
+	</columns>
+</query>

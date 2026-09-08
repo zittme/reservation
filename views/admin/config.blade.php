@@ -17,6 +17,24 @@
 		</div>
 
 		<div class="rsva-panel">
+			<h3>적립금과 쿠폰</h3>
+			<div class="rsva-form-grid">
+				<div>
+					<label>적립금</label>
+					<select name="credit_enabled"><option value="N">쓰지 않음</option><option value="Y" @if($rsv_config->credit_enabled === 'Y') selected @endif>사용</option></select>
+					<small>방문 완료 처리한 예약에만 적립됩니다.</small>
+				</div>
+				<div><label>기본 적립률 %</label><input type="number" name="credit_rate" min="0" max="100" step="0.1" value="{{ $rsv_config->credit_rate }}" /><small>등급에 적립률이 있으면 그쪽이 우선입니다.</small></div>
+				<div><label>1회 최소 사용액</label><input type="number" name="credit_min_use" min="0" step="1000" value="{{ $rsv_config->credit_min_use }}" /><small>0이면 제한하지 않습니다.</small></div>
+				<div><label>1회 최대 사용률 %</label><input type="number" name="credit_max_use_rate" min="0" max="100" step="1" value="{{ $rsv_config->credit_max_use_rate }}" /><small>0이면 시술 금액까지 전부 쓸 수 있습니다.</small></div>
+				<div>
+					<label>쿠폰</label>
+					<select name="coupon_enabled"><option value="N">쓰지 않음</option><option value="Y" @if($rsv_config->coupon_enabled === 'Y') selected @endif>사용</option></select>
+				</div>
+			</div>
+		</div>
+
+		<div class="rsva-panel">
 			<h3>결제 {{ $pay_available ? '' : '— 짓미 페이(zittme_pay)가 설치되어 있지 않아 유료 예약을 받을 수 없습니다' }}</h3>
 			<div class="rsva-form-grid">
 				<div><label>결제 대기(홀드) 시간 (분)</label><input type="number" name="hold_minutes" min="3" max="120" value="{{ $rsv_config->hold_minutes }}" /></div>

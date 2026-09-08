@@ -4,7 +4,7 @@
 
 ## 요구 사항
 
-- Zittme 0.0.01 이상
+- Zittme 1.0.0 이상 (상품 · 서비스 구조화 데이터 출력은 Zittme 1.1 부터)
 - 예약금·결제 기능을 쓰려면 [zittme-pay](https://github.com/zittme/zittme_pay) 모듈이 필요합니다. 없어도 예약 자체는 동작하며, 결제 기능만 비활성화됩니다.
 
 ## 설치

@@ -17,8 +17,10 @@
 	<conditions>
 		<condition operation="in" column="booking.status" var="status_list" />
 		<condition operation="equal" column="booking.resource_srl" var="resource_srl" pipe="and" />
-		<condition operation="more" column="slot.slot_date" var="from_date" pipe="and" />
-		<condition operation="less" column="slot.slot_date" var="to_date" pipe="and" />
+		<condition operation="equal" column="booking.staff_srl" var="staff_srl" pipe="and" />
+		<condition operation="equal" column="booking.settlement_srl" var="settlement_srl" pipe="and" />
+		<condition operation="more" column="booking.service_date" var="from_date" pipe="and" />
+		<condition operation="less" column="booking.service_date" var="to_date" pipe="and" />
 		<group pipe="and">
 			<condition operation="like" column="booking.booker_name" var="search_keyword" />
 			<condition operation="like" column="booking.booker_phone" var="search_keyword" pipe="or" />

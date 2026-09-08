@@ -1,0 +1,15 @@
+<query id="useCouponIssueIf" action="update">
+	<!-- 쿠폰 사용 — booking_srl = 0 인 행만 점유 (원자, 중복 사용 방지) -->
+	<tables>
+		<table name="reservation_coupon_issue" />
+	</tables>
+	<columns>
+		<column name="booking_srl" var="booking_srl" notnull="notnull" />
+		<column name="used_date" var="used_date" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="issue_srl" var="issue_srl" required="true" />
+		<condition operation="equal" column="member_srl" var="member_srl" pipe="and" required="true" />
+		<condition operation="equal" column="booking_srl" var="from_booking_srl" pipe="and" required="true" />
+	</conditions>
+</query>

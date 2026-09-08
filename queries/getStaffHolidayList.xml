@@ -1,0 +1,20 @@
+<query id="getStaffHolidayList" action="select">
+	<!-- 담당자 개인 휴무(=staff_srl) + 매장 전체 휴무(staff_srl=0) 를 함께 가져온다 -->
+	<tables>
+		<table name="reservation_holiday" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="more" column="holiday_date" var="from_date" />
+		<condition operation="less" column="holiday_date" var="to_date" pipe="and" />
+		<group pipe="and">
+			<condition operation="equal" column="staff_srl" var="staff_srl" />
+			<condition operation="equal" column="staff_srl" default="0" pipe="or" />
+		</group>
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="holiday_date" order="asc" />
+	</navigation>
+</query>

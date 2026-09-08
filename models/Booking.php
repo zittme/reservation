@@ -28,20 +28,40 @@ class Booking
 		$slot_srl = (int)($args->slot_srl ?? 0);
 		$person = max(1, (int)($args->person_count ?? 1));
 
+		// 담당자 모드는 슬롯이 없다. 점유 칸을 잡는 것으로 대신한다
+		$staff_srl = (int)($args->staff_srl ?? 0);
+		$start_datetime = (string)($args->start_datetime ?? '');
+		$is_staff_mode = $staff_srl > 0 && $start_datetime !== '';
+
+		// 점유는 예약 번호로 걸어야 되돌릴 수 있다. 번호를 먼저 뽑는다
+		$booking_srl = getNextSequence();
+
 		// 1) 원자 점유
-		if (!Slot::occupy($slot_srl, $person))
+		if ($is_staff_mode)
+		{
+			$occupy_minutes = max(1, (int)($args->occupy_minutes ?? $args->duration_minutes ?? 0));
+			if (!Occupancy::reserve($staff_srl, $booking_srl, $start_datetime, $occupy_minutes))
+			{
+				return new \BaseObject(-1, 'msg_reservation_slot_full');
+			}
+		}
+		elseif (!Slot::occupy($slot_srl, $person))
 		{
 			return new \BaseObject(-1, 'msg_reservation_slot_full');
 		}
 
 		// 2) 예약 행
-		$booking_srl = getNextSequence();
 		$insert = (object)[
 			'booking_srl' => $booking_srl,
 			'booking_code' => Base::generateBookingCode(),
 			'module_srl' => (int)($args->module_srl ?? 0),
 			'resource_srl' => (int)($args->resource_srl ?? 0),
 			'slot_srl' => $slot_srl,
+			'staff_srl' => $staff_srl,
+			'service_date' => (string)($args->service_date ?? ''),
+			'start_datetime' => $start_datetime,
+			'end_datetime' => (string)($args->end_datetime ?? ''),
+			'duration_minutes' => (int)($args->duration_minutes ?? 0),
 			'member_srl' => (int)($args->member_srl ?? 0),
 			'booker_name' => (string)($args->booker_name ?? ''),
 			'booker_phone' => (string)($args->booker_phone ?? ''),
@@ -49,6 +69,13 @@ class Booking
 			'guest_password' => (string)($args->guest_password ?? ''),
 			'person_count' => $person,
 			'amount' => (int)($args->amount ?? 0),
+			'paid_amount' => (int)($args->paid_amount ?? 0),
+			'discount_amount' => (int)($args->discount_amount ?? 0),
+			'coupon_issue_srl' => (int)($args->coupon_issue_srl ?? 0),
+			'credit_used' => (int)($args->credit_used ?? 0),
+			'credit_earned' => 0,
+			'share_rate_snapshot' => (int)($args->share_rate_snapshot ?? -1),
+			'settlement_srl' => 0,
 			'pay_order_srl' => 0,
 			'status' => (string)($args->status ?? Base::STATUS_HOLD),
 			'hold_expires' => (string)($args->hold_expires ?? ''),
@@ -65,7 +92,14 @@ class Booking
 		if (!$output->toBool())
 		{
 			// INSERT 실패 — 점유를 즉시 되돌린다
-			Slot::release($slot_srl, $person);
+			if ($is_staff_mode)
+			{
+				Occupancy::release($booking_srl);
+			}
+			else
+			{
+				Slot::release($slot_srl, $person);
+			}
 			return $output;
 		}
 
@@ -121,6 +155,13 @@ class Booking
 		if ($won)
 		{
 			self::log($booking_srl, 'confirm', '', Base::STATUS_CONFIRMED, $actor_srl);
+
+			// 조건부 전이에서 이긴 요청만 알린다. 결제 통보가 두 번 와도 한 번만 나간다
+			$booking = self::get($booking_srl);
+			if ($booking)
+			{
+				Notify::send($booking, Notify::TPL_CONFIRMED);
+			}
 		}
 		return $won;
 	}
@@ -154,12 +195,38 @@ class Booking
 			return false;
 		}
 
-		// 노쇼는 자리를 쓴 것이므로 슬롯을 반환하지 않는다
+		// 노쇼는 자리를 쓴 것이므로 반환하지 않는다
 		if ($to !== Base::STATUS_NOSHOW)
 		{
-			Slot::release((int)$booking->slot_srl, (int)$booking->person_count);
+			if ((int)$booking->staff_srl > 0)
+			{
+				Occupancy::release($booking_srl);
+			}
+			else
+			{
+				Slot::release((int)$booking->slot_srl, (int)$booking->person_count);
+			}
 		}
 		self::log($booking_srl, $to === Base::STATUS_EXPIRED ? 'expire' : ($to === Base::STATUS_NOSHOW ? 'noshow' : 'cancel'), (string)$booking->status, $to, $actor_srl);
+
+		// 혜택 정산. 노쇼는 자리를 쓴 것으로 보므로 쿠폰도 적립금도 돌려주지 않는다
+		if ($to !== Base::STATUS_NOSHOW)
+		{
+			Coupon::releaseByBooking($booking_srl);
+			Credit::settleCancel($booking);
+		}
+
+		if ((int)$booking->member_srl > 0)
+		{
+			Grade::recalc((int)$booking->member_srl);
+		}
+
+		// 만료는 결제를 하다 만 것이라 알리지 않는다. 손님이 받을 이유가 없다
+		if ($to === Base::STATUS_CANCELLED)
+		{
+			Notify::send($booking, Notify::TPL_CANCELLED);
+		}
+
 		return true;
 	}
 

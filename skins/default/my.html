@@ -5,6 +5,32 @@
 	<h2 class="rsv-title">{{ $lang->reservation_my }}</h2>
 
 	@if ($is_member)
+		@if ($rsv_config->credit_enabled === 'Y' || $my_grade || count($my_coupons))
+		<div class="rsv-summary">
+			@if ($my_grade)
+			<strong>{{ $lang->reservation_grade }} · {{ $my_grade->title }}</strong>
+			@endif
+			@if ($rsv_config->credit_enabled === 'Y')
+			<span class="rsv-price">{{ $lang->reservation_credit_balance }} {{ number_format($credit_balance) }}원</span>
+			@endif
+			@if (count($my_coupons))
+			<span>{{ $lang->reservation_my_coupons }} {{ count($my_coupons) }}</span>
+			@endif
+		</div>
+
+		@if (count($credit_logs))
+		<ul class="rsv-my-list">
+			@foreach ($credit_logs as $log)
+			<li>
+				<span class="rsv-my-code">{{ $lang->{'reservation_credit_' . $log->type} ?? $log->type }}</span>
+				<span class="rsv-my-status">{{ (int)$log->amount > 0 ? '+' : '' }}{{ number_format((int)$log->amount) }}</span>
+				<span class="rsv-my-date">{{ zdate($log->regdate, 'Y.m.d') }}</span>
+			</li>
+			@endforeach
+		</ul>
+		@endif
+		@endif
+
 		@if (empty($bookings))
 		<p class="rsv-empty">{{ $lang->reservation_no_bookings }}</p>
 		@else

@@ -1,0 +1,13 @@
+<query id="releaseCouponIssueByBooking" action="update">
+	<!-- 예약 취소 — 쿠폰을 미사용 상태로 되돌린다 -->
+	<tables>
+		<table name="reservation_coupon_issue" />
+	</tables>
+	<columns>
+		<column name="booking_srl" var="new_booking_srl" notnull="notnull" />
+		<column name="used_date" var="used_date" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="booking_srl" var="booking_srl" required="true" />
+	</conditions>
+</query>

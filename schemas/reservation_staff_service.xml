@@ -1,0 +1,15 @@
+<table name="reservation_staff_service">
+	<!-- 담당자가 어떤 시술을 하는지, 그 시술의 값과 시간을 따로 쓰는지 -->
+	<column name="map_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="staff_srl" type="bigint" notnull="notnull" default="0" index="idx_staff_srl" />
+	<column name="resource_srl" type="bigint" notnull="notnull" default="0" index="idx_resource_srl" />
+	<!-- -1 이면 시술 기본가를 쓴다 -->
+	<column name="price" type="bigint" notnull="notnull" default="-1" />
+	<!-- 0 이면 시술 기본 소요시간을 쓴다 -->
+	<column name="duration" type="int" notnull="notnull" default="0" />
+	<!-- -1 이면 담당자 기본 배분율을 쓴다. 만분율 정수 -->
+	<column name="share_rate" type="int" notnull="notnull" default="-1" />
+	<column name="is_active" type="char" size="1" notnull="notnull" default="Y" />
+	<column name="regdate" type="char" size="14" />
+	<index name="unique_staff_resource" columns="staff_srl,resource_srl" unique="true" />
+</table>

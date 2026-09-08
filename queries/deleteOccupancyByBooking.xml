@@ -1,0 +1,8 @@
+<query id="deleteOccupancyByBooking" action="delete">
+	<tables>
+		<table name="reservation_occupancy" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="booking_srl" var="booking_srl" required="true" />
+	</conditions>
+</query>

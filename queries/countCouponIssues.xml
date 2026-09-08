@@ -1,0 +1,13 @@
+<query id="countCouponIssues" action="select">
+	<!-- 회원이 이 쿠폰을 받은 횟수 -->
+	<tables>
+		<table name="reservation_coupon_issue" />
+	</tables>
+	<columns>
+		<column name="count(*)" alias="count" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="coupon_srl" var="coupon_srl" required="true" />
+		<condition operation="equal" column="member_srl" var="member_srl" pipe="and" />
+	</conditions>
+</query>

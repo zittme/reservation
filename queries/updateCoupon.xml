@@ -1,0 +1,22 @@
+<query id="updateCoupon" action="update">
+	<tables>
+		<table name="reservation_coupon" />
+	</tables>
+	<columns>
+		<column name="title" var="title" />
+		<column name="code" var="code" />
+		<column name="discount_type" var="discount_type" />
+		<column name="discount_value" var="discount_value" />
+		<column name="max_discount" var="max_discount" />
+		<column name="min_amount" var="min_amount" />
+		<column name="resource_srl" var="resource_srl" />
+		<column name="use_start" var="use_start" />
+		<column name="use_end" var="use_end" />
+		<column name="per_member" var="per_member" />
+		<column name="total_limit" var="total_limit" />
+		<column name="status" var="status" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="coupon_srl" var="coupon_srl" required="true" />
+	</conditions>
+</query>

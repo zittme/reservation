@@ -1,0 +1,18 @@
+<query id="updateSettlement" action="update">
+	<tables>
+		<table name="reservation_settlement" />
+	</tables>
+	<columns>
+		<column name="booking_count" var="booking_count" />
+		<column name="gross_amount" var="gross_amount" />
+		<column name="share_amount" var="share_amount" />
+		<column name="store_amount" var="store_amount" />
+		<column name="status" var="status" />
+		<column name="memo" var="memo" />
+		<column name="confirmed_date" var="confirmed_date" />
+		<column name="paid_date" var="paid_date" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="settlement_srl" var="settlement_srl" required="true" />
+	</conditions>
+</query>

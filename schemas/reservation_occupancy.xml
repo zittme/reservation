@@ -1,0 +1,17 @@
+<table name="reservation_occupancy">
+	<!--
+	  담당자 모드의 점유 장치. 슬롯을 미리 찍지 않는 대신 예약이 차지하는 시간을
+	  일정 단위(설정 slot_unit 분)로 쪼개 한 칸씩 이 표에 적는다.
+
+	  ★ 동시성의 심장. 점유는 오직 (staff_srl, cell) 유일 인덱스로만 막는다:
+	  한 예약이 차지하는 칸 전부를 INSERT 한 번으로 넣고, 중복 키로 실패하면
+	  트랜잭션을 되돌린다. PHP 에서 조회-판단-저장 금지.
+	-->
+	<column name="occupancy_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="staff_srl" type="bigint" notnull="notnull" default="0" />
+	<!-- YYYYMMDDHHMM. 칸의 시작 시각 -->
+	<column name="cell" type="char" size="12" notnull="notnull" />
+	<column name="booking_srl" type="bigint" notnull="notnull" default="0" index="idx_booking_srl" />
+	<column name="regdate" type="char" size="14" />
+	<index name="unique_staff_cell" columns="staff_srl,cell" unique="true" />
+</table>

@@ -1,0 +1,8 @@
+<query id="deleteCoupon" action="delete">
+	<tables>
+		<table name="reservation_coupon" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="coupon_srl" var="coupon_srl" required="true" />
+	</conditions>
+</query>

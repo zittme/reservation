@@ -1,0 +1,8 @@
+<query id="deleteSettlementItems" action="delete">
+	<tables>
+		<table name="reservation_settlement_item" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="settlement_srl" var="settlement_srl" required="true" />
+	</conditions>
+</query>

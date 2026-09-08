@@ -18,9 +18,13 @@
 		<action name="dispReservationForm" class="Controllers\Front" />
 		<action name="dispReservationResult" class="Controllers\Front" />
 		<action name="dispReservationMy" class="Controllers\Front" />
+		<!-- 담당자 본인 화면. 자기 예약표와 정산 내역만 본다 -->
+		<action name="dispReservationStaffHome" class="Controllers\Front" />
 
 		<!-- JSON/proc: 위젯·달력에서 mid 유무와 무관하게 호출 -->
 		<action name="procReservationGetSlots" class="Controllers\Booking" standalone="true" check-csrf="false" />
+		<action name="procReservationGetTimes" class="Controllers\Booking" standalone="true" check-csrf="false" />
+		<action name="procReservationGetOpenDays" class="Controllers\Booking" standalone="true" check-csrf="false" />
 		<action name="procReservationSubmit" class="Controllers\Booking" standalone="true" />
 		<action name="procReservationCancel" class="Controllers\Booking" standalone="true" />
 		<action name="procReservationGuestLookup" class="Controllers\Booking" standalone="true" />
@@ -33,16 +37,32 @@
 		<action name="dispReservationAdminSchedule" class="Controllers\Admin" permission="manager" />
 		<action name="dispReservationAdminForms" class="Controllers\Admin" permission="manager" />
 		<action name="dispReservationAdminStats" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminStaff" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminStaffEdit" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminSettlements" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminSettlementView" class="Controllers\Admin" permission="manager" />
+		<action name="dispReservationAdminMembership" class="Controllers\Admin" permission="manager" />
 		<action name="dispReservationAdminConfig" class="Controllers\Admin" permission="manager" />
 
 		<action name="procReservationAdminInsertConfig" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminUpdateSkin" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminInsertStaff" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteStaff" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminBuildSettlement" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminChangeSettlement" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteSettlement" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminInsertResource" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminDeleteResource" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminInsertRule" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminDeleteRule" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminInsertHoliday" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminDeleteHoliday" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminInsertGrade" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteGrade" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminInsertCoupon" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminDeleteCoupon" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminIssueCoupon" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminAdjustCredit" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminInsertField" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminDeleteField" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminUpdateBooking" class="Controllers\Admin" permission="manager" />

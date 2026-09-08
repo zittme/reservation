@@ -16,6 +16,10 @@
 		<column name="max_advance_days" var="max_advance_days" />
 		<column name="min_lead_minutes" var="min_lead_minutes" />
 		<column name="cancel_deadline_hours" var="cancel_deadline_hours" />
+		<column name="booking_mode" var="booking_mode" />
+		<column name="category" var="category" />
+		<column name="pay_mode" var="pay_mode" />
+		<column name="deposit_amount" var="deposit_amount" />
 		<column name="status" var="status" />
 		<column name="list_order" var="list_order" />
 		<column name="last_update" var="last_update" />

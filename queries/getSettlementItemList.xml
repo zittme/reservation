@@ -1,0 +1,14 @@
+<query id="getSettlementItemList" action="select">
+	<tables>
+		<table name="reservation_settlement_item" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="settlement_srl" var="settlement_srl" required="true" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="service_date" order="asc" />
+	</navigation>
+</query>

@@ -1,0 +1,17 @@
+<query id="getStaffList" action="select">
+	<tables>
+		<table name="reservation_staff" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="module_srl" var="module_srl" />
+		<condition operation="equal" column="branch_srl" var="branch_srl" pipe="and" />
+		<condition operation="equal" column="status" var="status" pipe="and" />
+		<condition operation="equal" column="member_srl" var="member_srl" pipe="and" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="list_order" order="asc" />
+	</navigation>
+</query>

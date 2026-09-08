@@ -1,0 +1,16 @@
+<query id="getGradeList" action="select">
+	<!-- 기준 금액 오름차순. 가장 높은 구간을 고르는 쪽이 이 순서에 기댄다 -->
+	<tables>
+		<table name="reservation_grade" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="module_srl" var="module_srl" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="min_spend" order="asc" />
+		<list_count var="list_count" default="100" />
+	</navigation>
+</query>

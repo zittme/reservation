@@ -1,0 +1,15 @@
+<query id="insertStaffService" action="insert">
+	<tables>
+		<table name="reservation_staff_service" />
+	</tables>
+	<columns>
+		<column name="map_srl" var="map_srl" notnull="notnull" />
+		<column name="staff_srl" var="staff_srl" notnull="notnull" />
+		<column name="resource_srl" var="resource_srl" notnull="notnull" />
+		<column name="price" var="price" default="-1" />
+		<column name="duration" var="duration" default="0" />
+		<column name="share_rate" var="share_rate" default="-1" />
+		<column name="is_active" var="is_active" default="Y" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

@@ -1,0 +1,7 @@
+<table name="reservation_member_grade">
+	<!-- 회원별 현재 등급 (방문 완료/취소 시 자동 재계산) -->
+	<column name="member_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="grade_srl" type="bigint" notnull="notnull" default="0" index="idx_grade_srl" />
+	<column name="total_spend" type="bigint" notnull="notnull" default="0" />
+	<column name="upddate" type="char" size="14" />
+</table>

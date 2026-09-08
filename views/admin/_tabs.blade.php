@@ -88,9 +88,11 @@ body { -webkit-font-smoothing: antialiased; color: var(--zmc-ink); }
 @php
 $zmc_menu = [
 	'dashboard' => $lang->rsv_tab_dashboard, 'bookings' => $lang->rsv_tab_bookings, 'resources' => $lang->rsv_tab_resources,
-	'schedule' => $lang->rsv_tab_schedule, 'forms' => $lang->rsv_tab_forms, 'stats' => $lang->rsv_tab_stats, 'config' => $lang->rsv_tab_config,
+	'staff' => $lang->rsv_tab_staff, 'schedule' => $lang->rsv_tab_schedule, 'settlements' => $lang->rsv_tab_settlements,
+	'membership' => $lang->rsv_tab_membership,
+	'forms' => $lang->rsv_tab_forms, 'stats' => $lang->rsv_tab_stats, 'config' => $lang->rsv_tab_config,
 ];
-$zmc_active_alias = ['resource_edit' => 'resources'];
+$zmc_active_alias = ['resource_edit' => 'resources', 'staff_edit' => 'staff', 'settlement_view' => 'settlements'];
 $zmc_current = $zmc_active_alias[$zmc_page] ?? $zmc_page;
 @endphp
 <aside class="zmc-side">

@@ -1,0 +1,8 @@
+<query id="deleteGrade" action="delete">
+	<tables>
+		<table name="reservation_grade" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="grade_srl" var="grade_srl" required="true" />
+	</conditions>
+</query>

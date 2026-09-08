@@ -1,0 +1,21 @@
+<query id="updateStaff" action="update">
+	<tables>
+		<table name="reservation_staff" />
+	</tables>
+	<columns>
+		<column name="branch_srl" var="branch_srl" />
+		<column name="member_srl" var="member_srl" />
+		<column name="name" var="name" />
+		<column name="position" var="position" />
+		<column name="summary" var="summary" />
+		<column name="content" var="content" />
+		<column name="thumb" var="thumb" />
+		<column name="share_rate" var="share_rate" />
+		<column name="status" var="status" />
+		<column name="list_order" var="list_order" />
+		<column name="last_update" var="last_update" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="staff_srl" var="staff_srl" required="true" />
+	</conditions>
+</query>

@@ -81,6 +81,41 @@
 			@endforeach
 		</fieldset>
 
+		{{-- 혜택. 회원일 때만, 그리고 켜 두었을 때만 보인다 --}}
+		@if ($is_member && ($coupon_enabled || ($credit_enabled && $credit_usable > 0)))
+		<fieldset>
+			<legend>{{ $lang->reservation_benefit }}</legend>
+
+			@if ($grade_discount > 0)
+			<p class="rsv-benefit-note">{{ $my_grade->title }} {{ $lang->reservation_grade_discount }} -{{ number_format($grade_discount) }}원</p>
+			@endif
+
+			@if ($coupon_enabled)
+			<div class="rsv-row">
+				<label for="rsv_coupon">{{ $lang->reservation_coupon }}</label>
+				<select name="coupon_issue_srl" id="rsv_coupon">
+					<option value="0">{{ $lang->reservation_coupon_none }}</option>
+					@foreach ($my_coupons as $mine)
+					<option value="{{ $mine->issue_srl }}">{{ $mine->coupon->title }} (-{{ number_format($mine->discount) }}원)</option>
+					@endforeach
+				</select>
+			</div>
+			<div class="rsv-row">
+				<label for="rsv_coupon_code">{{ $lang->reservation_coupon_code }}</label>
+				<input type="text" name="coupon_code" id="rsv_coupon_code" maxlength="40" />
+			</div>
+			@endif
+
+			@if ($credit_enabled && $credit_usable > 0)
+			<div class="rsv-row">
+				<label for="rsv_credit">{{ $lang->reservation_credit }}</label>
+				<input type="number" name="credit_use" id="rsv_credit" value="0" min="0" max="{{ $credit_usable }}" step="100" />
+				<small>{{ sprintf($lang->reservation_credit_usable, number_format($credit_usable), number_format($credit_balance)) }}</small>
+			</div>
+			@endif
+		</fieldset>
+		@endif
+
 		<div class="rsv-agree">
 			<label class="rsv-check">
 				<input type="checkbox" name="agree_privacy" value="Y" required />

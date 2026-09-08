@@ -18,6 +18,10 @@
 		<column name="max_advance_days" var="max_advance_days" default="90" />
 		<column name="min_lead_minutes" var="min_lead_minutes" default="60" />
 		<column name="cancel_deadline_hours" var="cancel_deadline_hours" default="24" />
+		<column name="booking_mode" var="booking_mode" default="slot" />
+		<column name="category" var="category" />
+		<column name="pay_mode" var="pay_mode" default="none" />
+		<column name="deposit_amount" var="deposit_amount" default="0" />
 		<column name="status" var="status" default="open" />
 		<column name="list_order" var="list_order" default="0" />
 		<column name="regdate" var="regdate" />

@@ -19,6 +19,17 @@
 	<column name="max_advance_days" type="int" notnull="notnull" default="90" />
 	<column name="min_lead_minutes" type="int" notnull="notnull" default="60" />
 	<column name="cancel_deadline_hours" type="int" notnull="notnull" default="24" />
+	<!--
+	  점유 방식. slot = 미리 찍어 둔 슬롯을 나눠 쓰는 정원제(강습, 회의실).
+	  staff = 담당자의 빈 시간을 계산해 잡는 방식(미용실, 상담). 뒤쪽은 슬롯을 쓰지 않는다.
+	-->
+	<column name="booking_mode" type="varchar" size="10" notnull="notnull" default="slot" />
+	<!-- 시술 분류. 컷, 펌 같은 묶음 이름을 그대로 적는다 -->
+	<column name="category" type="varchar" size="100" />
+	<!-- none = 결제 없음 / deposit = 예약금만 / full = 전액 선결제 -->
+	<column name="pay_mode" type="varchar" size="10" notnull="notnull" default="none" />
+	<!-- pay_mode 가 deposit 일 때 받을 금액 -->
+	<column name="deposit_amount" type="bigint" notnull="notnull" default="0" />
 	<column name="status" type="varchar" size="20" notnull="notnull" default="open" index="idx_status" />
 	<column name="list_order" type="bigint" notnull="notnull" default="0" index="idx_list_order" />
 	<column name="regdate" type="char" size="14" index="idx_regdate" />

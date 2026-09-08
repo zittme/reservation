@@ -49,6 +49,20 @@ class Base extends \ModuleObject
 	}
 
 	/**
+	 * 담당자와 정산이 매달릴 인스턴스 번호.
+	 *
+	 * 예약은 단일 인스턴스 모듈이고 예약상품이 이미 0 으로 저장되고 있다.
+	 * 관리 화면과 프론트가 서로 다른 값을 쓰면 담당자 목록이 한쪽에서 통째로
+	 * 비어 보인다. 두 곳 모두 이 함수만 부른다.
+	 *
+	 * @return int
+	 */
+	public static function instanceSrl(): int
+	{
+		return 0;
+	}
+
+	/**
 	 * 예약 상태.
 	 */
 	public const STATUS_HOLD = 'hold';           // 결제 대기 (슬롯 점유 중, hold_expires 지나면 만료)

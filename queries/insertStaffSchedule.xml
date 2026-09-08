@@ -1,0 +1,16 @@
+<query id="insertStaffSchedule" action="insert">
+	<tables>
+		<table name="reservation_staff_schedule" />
+	</tables>
+	<columns>
+		<column name="rule_srl" var="rule_srl" notnull="notnull" />
+		<column name="staff_srl" var="staff_srl" notnull="notnull" />
+		<column name="weekday" var="weekday" default="0" />
+		<column name="start_time" var="start_time" notnull="notnull" />
+		<column name="end_time" var="end_time" notnull="notnull" />
+		<column name="valid_from" var="valid_from" />
+		<column name="valid_to" var="valid_to" />
+		<column name="is_active" var="is_active" default="Y" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

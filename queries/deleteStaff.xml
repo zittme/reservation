@@ -1,0 +1,8 @@
+<query id="deleteStaff" action="delete">
+	<tables>
+		<table name="reservation_staff" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="staff_srl" var="staff_srl" required="true" />
+	</conditions>
+</query>

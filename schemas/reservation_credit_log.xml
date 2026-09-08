@@ -1,0 +1,12 @@
+<table name="reservation_credit_log">
+	<!-- 적립금 원장. amount 는 +적립/-사용, balance_after 는 처리 직후 잔액 -->
+	<column name="log_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="member_srl" type="bigint" notnull="notnull" index="idx_member_srl" />
+	<column name="booking_srl" type="bigint" notnull="notnull" default="0" index="idx_booking_srl" />
+	<column name="amount" type="bigint" notnull="notnull" default="0" />
+	<column name="balance_after" type="bigint" notnull="notnull" default="0" />
+	<!-- earn / spend / refund / earn_cancel / admin -->
+	<column name="type" type="varchar" size="12" notnull="notnull" />
+	<column name="memo" type="varchar" size="250" />
+	<column name="regdate" type="char" size="14" index="idx_regdate" />
+</table>

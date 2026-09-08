@@ -1,0 +1,23 @@
+<query id="insertCoupon" action="insert">
+	<tables>
+		<table name="reservation_coupon" />
+	</tables>
+	<columns>
+		<column name="coupon_srl" var="coupon_srl" notnull="notnull" />
+		<column name="module_srl" var="module_srl" default="0" />
+		<column name="title" var="title" notnull="notnull" />
+		<column name="code" var="code" />
+		<column name="discount_type" var="discount_type" default="fixed" />
+		<column name="discount_value" var="discount_value" default="0" />
+		<column name="max_discount" var="max_discount" default="0" />
+		<column name="min_amount" var="min_amount" default="0" />
+		<column name="resource_srl" var="resource_srl" default="0" />
+		<column name="use_start" var="use_start" />
+		<column name="use_end" var="use_end" />
+		<column name="per_member" var="per_member" default="1" />
+		<column name="total_limit" var="total_limit" default="0" />
+		<column name="used_count" var="used_count" default="0" />
+		<column name="status" var="status" default="Y" />
+		<column name="regdate" var="regdate" />
+	</columns>
+</query>

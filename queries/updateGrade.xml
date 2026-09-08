@@ -1,0 +1,16 @@
+<query id="updateGrade" action="update">
+	<tables>
+		<table name="reservation_grade" />
+	</tables>
+	<columns>
+		<column name="title" var="title" />
+		<column name="min_spend" var="min_spend" />
+		<column name="credit_rate" var="credit_rate" />
+		<column name="coupon_srl" var="coupon_srl" />
+		<column name="discount_type" var="discount_type" />
+		<column name="discount_value" var="discount_value" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="grade_srl" var="grade_srl" required="true" />
+	</conditions>
+</query>

@@ -1,0 +1,15 @@
+<query id="getStaffScheduleList" action="select">
+	<tables>
+		<table name="reservation_staff_schedule" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="staff_srl" var="staff_srl" required="true" />
+		<condition operation="equal" column="is_active" var="is_active" pipe="and" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="weekday" order="asc" />
+	</navigation>
+</query>

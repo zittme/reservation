@@ -1,0 +1,16 @@
+<table name="reservation_grade">
+	<!-- 단골 등급 — 코어 회원그룹과 무관한 예약 자체 등급 -->
+	<column name="grade_srl" type="bigint" notnull="notnull" primarykey="primarykey" />
+	<column name="module_srl" type="bigint" notnull="notnull" default="0" index="idx_module_srl" />
+	<column name="title" type="varchar" size="80" notnull="notnull" />
+	<!-- 누적 이용 금액이 이 값 이상이면 이 등급 (가장 높은 구간 적용) -->
+	<column name="min_spend" type="bigint" notnull="notnull" default="0" index="idx_min_spend" />
+	<!-- 등급별 적립률 % (0 = 기본 설정 따름) -->
+	<column name="credit_rate" type="float" notnull="notnull" default="0" />
+	<!-- 등급 달성 시 자동 발급할 쿠폰 (0 = 없음) -->
+	<column name="coupon_srl" type="bigint" notnull="notnull" default="0" />
+	<!-- 등급별 시술 할인: '' 없음 / amount 정액(원) / percent 정률(%) -->
+	<column name="discount_type" type="varchar" size="10" default="" />
+	<column name="discount_value" type="float" notnull="notnull" default="0" />
+	<column name="regdate" type="char" size="14" />
+</table>

@@ -35,6 +35,35 @@ class Config
 		'notify_admin_email' => '',
 		// 환불 규정: "일수:비율" 줄바꿈 목록. 예) "3:100\n1:50\n0:0"
 		'refund_policy' => "3:100\n1:50\n0:0",
+		// 담당자 모드의 점유 칸 크기(분). 예약 가능 시각도 이 간격으로 노출된다
+		'slot_unit' => 10,
+		// 담당자를 고르지 않고 예약할 수 있는가
+		'allow_any_staff' => 'Y',
+		// 알림 채널별 사용 여부
+		'notify_mail' => 'Y',
+		'notify_sms' => 'N',
+		'notify_alimtalk' => 'N',
+		// 알림 종류별 사용 여부
+		'notify_on_booked' => 'Y',
+		'notify_on_confirmed' => 'Y',
+		'notify_on_cancelled' => 'Y',
+		'notify_remind' => 'Y',
+		// 방문 몇 시간 전에 알릴 것인가
+		'remind_hours' => 24,
+		// 문자 발신번호. 코어 SMS 설정의 기본 발신번호를 쓰려면 비워 둔다
+		'sms_from' => '',
+		// 정산 기본 배분율(만분율). 담당자에 값이 없을 때 쓴다. 4500 = 45%
+		'default_share_rate' => 0,
+		// 적립금
+		'credit_enabled' => 'N',
+		// 기본 적립률 %. 등급에 적립률이 있으면 그쪽이 이긴다
+		'credit_rate' => 0,
+		// 1회 최소 사용 금액 (0 = 제한 없음)
+		'credit_min_use' => 0,
+		// 1회 최대 사용률 % (0 = 제한 없음)
+		'credit_max_use_rate' => 0,
+		// 쿠폰 사용 허용
+		'coupon_enabled' => 'N',
 	];
 
 	/**

@@ -1,0 +1,13 @@
+<query id="insertCouponIssue" action="insert">
+	<tables>
+		<table name="reservation_coupon_issue" />
+	</tables>
+	<columns>
+		<column name="issue_srl" var="issue_srl" notnull="notnull" />
+		<column name="coupon_srl" var="coupon_srl" notnull="notnull" />
+		<column name="member_srl" var="member_srl" notnull="notnull" />
+		<column name="booking_srl" var="booking_srl" default="0" />
+		<column name="regdate" var="regdate" />
+		<column name="used_date" var="used_date" />
+	</columns>
+</query>

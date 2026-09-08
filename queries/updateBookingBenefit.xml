@@ -1,0 +1,15 @@
+<query id="updateBookingBenefit" action="update">
+	<!-- 예약 생성 뒤에 확정되는 값들. 쿠폰 점유와 적립금 차감은 예약번호가 나온 다음에야 할 수 있다 -->
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="discount_amount" var="discount_amount" />
+		<column name="coupon_issue_srl" var="coupon_issue_srl" />
+		<column name="credit_used" var="credit_used" />
+		<column name="credit_earned" var="credit_earned" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="booking_srl" var="booking_srl" required="true" />
+	</conditions>
+</query>
