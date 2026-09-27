@@ -3,19 +3,19 @@
 @if (Context::get('zmc_console'))
 <div class="rsva">
 	<div class="rsva-cards">
-		<div class="rsva-card"><b>{{ number_format($stat_today) }}</b><span>오늘 예약</span></div>
-		<div class="rsva-card"><b>{{ number_format($stat_week) }}</b><span>이번 주 예약</span></div>
-		<div class="rsva-card"><b>{{ number_format($stat_wait) }}</b><span>결제·입금 대기</span></div>
-		<div class="rsva-card"><b>{{ $pay_available ? 'ON' : 'OFF' }}</b><span>결제 연동 (zittme_pay)</span></div>
+		<div class="rsva-card"><b>{{ number_format($stat_today) }}</b><span>{{ $lang->rsv_adm_today_bookings }}</span></div>
+		<div class="rsva-card"><b>{{ number_format($stat_week) }}</b><span>{{ $lang->rsv_adm_week_bookings }}</span></div>
+		<div class="rsva-card"><b>{{ number_format($stat_wait) }}</b><span>{{ $lang->rsv_adm_awaiting_payment }}</span></div>
+		<div class="rsva-card"><b>{{ $pay_available ? 'ON' : 'OFF' }}</b><span>{{ $lang->rsv_adm_pay_link }}</span></div>
 	</div>
 
 	<div class="rsva-panel">
-		<h3>임박한 예약</h3>
+		<h3>{{ $lang->rsv_adm_upcoming }}</h3>
 		@if (empty($upcoming))
-		<p class="rsva-empty">예정된 예약이 없습니다.</p>
+		<p class="rsva-empty">{{ $lang->rsv_adm_no_upcoming }}</p>
 		@else
 		<table class="rsva-table">
-			<thead><tr><th>예약일시</th><th>예약상품</th><th>예약자</th><th>인원</th><th>상태</th><th>예약번호</th></tr></thead>
+			<thead><tr><th>{{ $lang->reservation_date }}</th><th>{{ $lang->rsv_adm_resource }}</th><th>{{ $lang->rsv_adm_booker }}</th><th>{{ $lang->reservation_person }}</th><th>{{ $lang->reservation_status }}</th><th>{{ $lang->reservation_booking_code }}</th></tr></thead>
 			<tbody>
 				@foreach ($upcoming as $b)
 				<tr>
@@ -36,9 +36,9 @@
 {{-- 코어 관리자에서는 콘솔 안내만 보여준다. 운영은 전용 콘솔로 일원화 --}}
 <div class="rsva">
 	<div class="rsva-panel">
-		<h3>운영 안내</h3>
+		<h3>{{ $lang->rsv_adm_guide_title }}</h3>
 		<p style="margin:0;font-size:13px;color:#6b7684;line-height:1.8">
-			예약 접수·자원·스케줄 등 모든 운영은 위의 <strong>전용 콘솔</strong>에서 합니다.
+			{!! $lang->rsv_adm_guide_body !!}
 		</p>
 	</div>
 </div>

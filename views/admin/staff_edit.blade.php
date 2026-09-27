@@ -3,7 +3,7 @@
 @php
 $st_srl = $staff ? (int)$staff->staff_srl : 0;
 $st_rate = $staff ? number_format((int)$staff->share_rate / 100, 1, '.', '') : '';
-$st_days = ['일', '월', '화', '수', '목', '금', '토'];
+$st_days = explode(',', $lang->reservation_dow);
 @endphp
 
 <div class="rsva">
@@ -13,73 +13,73 @@ $st_days = ['일', '월', '화', '수', '목', '금', '토'];
 		<input type="hidden" name="staff_srl" value="{{ $st_srl }}" />
 
 		<div class="rsva-panel">
-			<h3>기본 정보</h3>
+			<h3>{{ $lang->rsv_adm_basic_info }}</h3>
 			<div class="rsva-form-grid">
 				<div>
-					<label>이름</label>
+					<label>{{ $lang->rsv_staff_name }}</label>
 					<input type="text" name="name" value="{{ $staff->name ?? '' }}" required />
 				</div>
 				<div>
-					<label>직급</label>
-					<input type="text" name="position" value="{{ $staff->position ?? '' }}" placeholder="원장, 실장, 디자이너" />
+					<label>{{ $lang->rsv_staff_position }}</label>
+					<input type="text" name="position" value="{{ $staff->position ?? '' }}" placeholder="{{ $lang->rsv_adm_ph_position }}" />
 				</div>
 				<div>
-					<label>기본 배분율 (%)</label>
+					<label>{{ $lang->rsv_staff_share_rate }}</label>
 					<input type="text" name="share_rate" value="{{ $st_rate }}" placeholder="45" />
 				</div>
 				<div>
-					<label>노출 순서</label>
+					<label>{{ $lang->rsv_adm_display_order }}</label>
 					<input type="number" name="list_order" value="{{ (int)($staff->list_order ?? 0) }}" />
 				</div>
 				<div>
-					<label>상태</label>
+					<label>{{ $lang->reservation_status }}</label>
 					<select name="status">
-						<option value="active" @if(($staff->status ?? 'active') === 'active') selected="selected" @endif>노출</option>
-						<option value="hidden" @if(($staff->status ?? '') === 'hidden') selected="selected" @endif>숨김</option>
+						<option value="active" @if(($staff->status ?? 'active') === 'active') selected="selected" @endif>{{ $lang->rsv_staff_status_active }}</option>
+						<option value="hidden" @if(($staff->status ?? '') === 'hidden') selected="selected" @endif>{{ $lang->rsv_staff_status_hidden }}</option>
 					</select>
 				</div>
 				<div>
-					<label>사진 주소</label>
+					<label>{{ $lang->rsv_staff_thumb }}</label>
 					<input type="text" name="thumb" value="{{ $staff->thumb ?? '' }}" />
 				</div>
 				@if (count($branches))
 				<div>
-					<label>소속 지점</label>
+					<label>{{ $lang->rsv_adm_branch }}</label>
 					<select name="branch_srl">
-						<option value="0">지점 무관</option>
+						<option value="0">{{ $lang->rsv_branch_any }}</option>
 						@foreach ($branches as $b)
 						<option value="{{ (int)$b->branch_srl }}" @if((int)($staff->branch_srl ?? 0) === (int)$b->branch_srl) selected="selected" @endif>{{ $b->name }}</option>
 						@endforeach
 					</select>
-					<small style="color:#8b95a1">손님이 지점을 고르면 그 지점 담당자만 보입니다.</small>
+					<small style="color:#8b95a1">{{ $lang->rsv_adm_branch_help }}</small>
 				</div>
 				@endif
 			</div>
 
 			<div class="rsva-field" style="margin-top:14px">
-				<label>한 줄 소개</label>
+				<label>{{ $lang->rsv_staff_summary }}</label>
 				<input type="text" name="summary" value="{{ $staff->summary ?? '' }}" />
 			</div>
 			<div class="rsva-field">
-				<label>소개</label>
+				<label>{{ $lang->rsv_staff_content }}</label>
 				<textarea name="content" rows="4">{{ $staff->content ?? '' }}</textarea>
 			</div>
 			<div class="rsva-field">
-				<label>연결 회원 아이디</label>
-				<input type="text" name="member_id" value="{{ $staff_member_id ?? '' }}" placeholder="비워 두면 연결하지 않습니다" />
-				<small style="color:#8b95a1">적어 두면 그 회원이 로그인해 자기 예약과 정산만 볼 수 있습니다.</small>
+				<label>{{ $lang->rsv_staff_member }}</label>
+				<input type="text" name="member_id" value="{{ $staff_member_id ?? '' }}" placeholder="{{ $lang->rsv_adm_ph_member }}" />
+				<small style="color:#8b95a1">{{ $lang->rsv_adm_member_help }}</small>
 			</div>
 		</div>
 
 		<div class="rsva-panel">
-			<h3>맡는 시술</h3>
-			<p style="margin:-8px 0 14px;font-size:13px;color:#6b7684">체크한 시술만 이 담당자로 예약됩니다. 값과 소요시간과 배분율을 비우면 시술 기본값을 씁니다.</p>
+			<h3>{{ $lang->rsv_staff_services }}</h3>
+			<p style="margin:-8px 0 14px;font-size:13px;color:#6b7684">{{ $lang->about_rsv_staff_services }}</p>
 
 			@if (empty($resources))
-			<p class="rsva-empty">먼저 예약상품(시술)을 등록하세요.</p>
+			<p class="rsva-empty">{{ $lang->rsv_adm_add_resource_first }}</p>
 			@else
 			<table class="rsva-table">
-				<thead><tr><th style="width:34%">시술</th><th>값(원)</th><th>소요시간(분)</th><th>배분율(%)</th></tr></thead>
+				<thead><tr><th style="width:34%">{{ $lang->rsv_settlement_item_service }}</th><th>{{ $lang->rsv_adm_price_krw }}</th><th>{{ $lang->rsv_adm_time_needed }}</th><th>{{ $lang->rsv_adm_share_pct }}</th></tr></thead>
 				<tbody>
 					@foreach ($resources as $r)
 					@php
@@ -95,7 +95,7 @@ $st_days = ['일', '월', '화', '수', '목', '금', '토'];
 								<input type="checkbox" name="svc_use[]" value="{{ $r_srl }}" @if($r_map) checked="checked" @endif />
 								{{ $r->title }}
 							</label>
-							<small style="color:#9aa1ab">기본 {{ number_format((int)$r->price) }}원 / {{ (int)$r->duration }}분</small>
+							<small style="color:#9aa1ab">{{ sprintf($lang->rsv_adm_service_default, number_format((int)$r->price), (int)$r->duration) }}</small>
 						</td>
 						<td><input type="text" name="svc_price[{{ $r_srl }}]" value="{{ $r_price }}" placeholder="{{ (int)$r->price }}" /></td>
 						<td><input type="number" name="svc_duration[{{ $r_srl }}]" value="{{ $r_dur }}" placeholder="{{ (int)$r->duration }}" /></td>
@@ -108,11 +108,11 @@ $st_days = ['일', '월', '화', '수', '목', '금', '토'];
 		</div>
 
 		<div class="rsva-panel">
-			<h3>근무 요일</h3>
-			<p style="margin:-8px 0 14px;font-size:13px;color:#6b7684">체크한 요일의 시간대에만 예약을 받습니다. 개인 휴무는 운영 일정에서 넣습니다.</p>
+			<h3>{{ $lang->rsv_staff_schedule }}</h3>
+			<p style="margin:-8px 0 14px;font-size:13px;color:#6b7684">{{ $lang->about_rsv_staff_schedule }}</p>
 
 			<table class="rsva-table">
-				<thead><tr><th style="width:120px">요일</th><th>시작</th><th>종료</th></tr></thead>
+				<thead><tr><th style="width:120px">{{ $lang->rsv_adm_weekday }}</th><th>{{ $lang->rsv_adm_start }}</th><th>{{ $lang->rsv_adm_end }}</th></tr></thead>
 				<tbody>
 					@foreach ($st_days as $wd => $wd_label)
 					@php
@@ -134,8 +134,8 @@ $st_days = ['일', '월', '화', '수', '목', '금', '토'];
 		</div>
 
 		<div style="text-align:right">
-			<a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminStaff') }}" class="rsva-btn">목록</a>
-			<button type="submit" class="rsva-btn rsva-btn-primary">저장</button>
+			<a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminStaff') }}" class="rsva-btn">{{ $lang->rsv_adm_list }}</a>
+			<button type="submit" class="rsva-btn rsva-btn-primary">{{ $lang->rsv_adm_save }}</button>
 		</div>
 	</form>
 </div>

@@ -8,6 +8,7 @@ use Zittme\Modules\Reservation\Models\Config as ConfigModel;
 use Zittme\Modules\Reservation\Models\Coupon;
 use Zittme\Modules\Reservation\Models\Credit;
 use Zittme\Modules\Reservation\Models\Grade;
+use Zittme\Modules\Reservation\Models\Remind;
 use Zittme\Modules\Reservation\Models\Settlement as SettlementModel;
 use Zittme\Modules\Reservation\Models\Slot;
 use Zittme\Modules\Reservation\Models\Staff as StaffModel;
@@ -30,10 +31,18 @@ class Admin extends Base
 		'allow_guest', 'privacy_text', 'privacy_version', 'retention_days',
 		'notify_admin', 'notify_admin_email', 'refund_policy',
 		'credit_enabled', 'credit_rate', 'credit_min_use', 'credit_max_use_rate', 'coupon_enabled',
+		'notify_mail', 'notify_sms', 'notify_on_booked', 'notify_on_confirmed', 'notify_on_cancelled',
+		'notify_remind', 'remind_hours', 'sms_from', 'slot_unit', 'allow_any_staff',
 	];
 
-	protected const BOOLEAN_FIELDS = ['enabled', 'allow_guest', 'notify_admin', 'credit_enabled', 'coupon_enabled'];
+	protected const BOOLEAN_FIELDS = [
+		'enabled', 'allow_guest', 'notify_admin', 'credit_enabled', 'coupon_enabled',
+		'notify_mail', 'notify_sms', 'notify_on_booked', 'notify_on_confirmed', 'notify_on_cancelled',
+		'notify_remind', 'allow_any_staff',
+	];
 	protected const INT_FIELDS = [
+		'remind_hours' => [1, 168],
+		'slot_unit' => [5, 120],
 		'hold_minutes' => [3, 120],
 		'generate_days' => [7, 366],
 		'max_active_per_member' => [0, 100],
@@ -90,6 +99,7 @@ class Admin extends Base
 	public function dispReservationAdminDashboard()
 	{
 		BookingModel::expireStaleHolds();
+		Remind::runThrottled();
 
 		$today = date('Ymd');
 		$week_end = date('Ymd', strtotime('+6 day'));
@@ -445,6 +455,28 @@ class Admin extends Base
 			'list_order' => (int)\Context::get('list_order'),
 			'last_update' => self::now(),
 		];
+
+		// 폼에 칸이 없는 값(다른 화면·옛 스킨에서 저장)은 기존 값을 지킨다. 비어 오면 결제 없음으로 바뀌던 문제
+		$existing = null;
+		if ($resource_srl > 0)
+		{
+			$prev = executeQuery('reservation.getResource', (object)['resource_srl' => $resource_srl]);
+			$existing = ($prev->toBool() && is_object($prev->data)) ? $prev->data : null;
+		}
+		if ($existing)
+		{
+			foreach (['booking_mode', 'category', 'pay_mode', 'deposit_amount'] as $key)
+			{
+				if (\Context::get($key) === null)
+				{
+					$fields->{$key} = $existing->{$key} ?? $fields->{$key};
+				}
+			}
+		}
+		if (\Context::get('pay_mode') === null && \Context::get('require_payment') === 'Y' && $fields->pay_mode === 'none')
+		{
+			$fields->pay_mode = 'full';
+		}
 
 		// 결제 방식과 옛 표시를 어긋나게 두지 않는다. 화면 한쪽만 보고 판단하는 코드가 있다
 		$fields->require_payment = $fields->pay_mode === 'none' ? 'N' : 'Y';

@@ -1,0 +1,18 @@
+<query id="getRemindDue" action="select">
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="status" var="status" required="true" />
+		<condition operation="null" column="remind_sent" pipe="and" />
+		<condition operation="more" column="start_datetime" var="from_datetime" pipe="and" required="true" />
+		<condition operation="less" column="start_datetime" var="to_datetime" pipe="and" required="true" />
+	</conditions>
+	<navigation>
+		<index var="sort_index" default="start_datetime" order="asc" />
+		<list_count var="list_count" default="30" />
+	</navigation>
+</query>

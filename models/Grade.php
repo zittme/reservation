@@ -109,6 +109,10 @@ class Grade
 			$member_srl, Base::STATUS_DONE
 		);
 		$row = $stmt ? $stmt->fetchObject() : null;
+		if ($stmt)
+		{
+			$stmt->closeCursor();
+		}
 		$total = $row ? (int)$row->s : 0;
 
 		// 가장 높은 구간 (목록은 기준 금액 오름차순)

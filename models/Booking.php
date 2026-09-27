@@ -240,25 +240,68 @@ class Booking
 	 */
 	public static function expireStaleHolds(): int
 	{
-		$output = executeQuery('reservation.getExpiredHolds', (object)[
-			'status' => Base::STATUS_HOLD,
-			'now' => Base::now(),
-			'list_count' => 20,
-		]);
-		if (!$output->toBool() || empty($output->data))
-		{
-			return 0;
-		}
-
 		$count = 0;
-		foreach (is_array($output->data) ? $output->data : [$output->data] as $row)
+		foreach ([Base::STATUS_HOLD, Base::STATUS_PENDING] as $status)
 		{
-			if (!empty($row->booking_srl) && self::cancelAndRelease((int)$row->booking_srl, 0, Base::STATUS_EXPIRED))
+			$output = executeQuery('reservation.getExpiredHolds', (object)[
+				'status' => $status,
+				'now' => Base::now(),
+				'list_count' => 20,
+			]);
+			if (!$output->toBool() || empty($output->data))
 			{
-				$count++;
+				continue;
+			}
+
+			foreach (is_array($output->data) ? $output->data : [$output->data] as $row)
+			{
+				if (empty($row->booking_srl))
+				{
+					continue;
+				}
+
+				// 결제 쪽 상태를 먼저 본다. 입금 대기(무통장·가상계좌)는 입금 기한까지 자리를 지켜 주고,
+				// 통지를 놓친 결제 완료 건은 만료가 아니라 확정이다
+				$order = self::getPayOrder((int)($row->pay_order_srl ?? 0));
+				if ($order && (string)$order->status === 'paid')
+				{
+					self::confirm((int)$row->booking_srl, 0);
+					continue;
+				}
+				$due = (string)($order->due_date ?? '');
+				if ($order && (string)$order->status === 'pending' && $status === Base::STATUS_HOLD
+					&& (strlen($due) !== 14 || $due > Base::now()))
+				{
+					if (strlen($due) !== 14)
+					{
+						$due = date('YmdHis', time() + 86400 * 3);
+					}
+					self::transition((int)$row->booking_srl, [Base::STATUS_HOLD], Base::STATUS_PENDING, ['hold_expires' => $due]);
+					continue;
+				}
+
+				if (self::cancelAndRelease((int)$row->booking_srl, 0, Base::STATUS_EXPIRED))
+				{
+					$count++;
+				}
 			}
 		}
 		return $count;
+	}
+
+	/**
+	 * 예약에 연결된 결제 주문. 짓미페이가 없으면 null.
+	 *
+	 * @param int $order_srl
+	 * @return ?object
+	 */
+	protected static function getPayOrder(int $order_srl): ?object
+	{
+		if ($order_srl <= 0 || !class_exists('\\Zittme\\Modules\\Zittme_pay\\PayService'))
+		{
+			return null;
+		}
+		return \Zittme\Modules\Zittme_pay\PayService::getOrder($order_srl);
 	}
 
 	/**

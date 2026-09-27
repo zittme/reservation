@@ -58,6 +58,12 @@ class Notify
 		try
 		{
 			$config = Config::getConfig();
+			if ($template === self::TPL_BOOKED && (string)($config->notify_admin ?? 'N') === 'Y')
+			{
+				$admin_context = self::buildContext($booking, $extra);
+				self::sendAdminMail($booking, (string)($config->notify_admin_email ?? ''),
+					self::renderSubject($template, $admin_context), self::renderBody($template, $admin_context));
+			}
 			if (!self::isEnabled($config, $template))
 			{
 				return;
@@ -244,6 +250,39 @@ class Notify
 		catch (\Throwable $e)
 		{
 			self::log($booking, self::CHANNEL_MAIL, $template, $to, 'failed', $e->getMessage());
+		}
+	}
+
+	/**
+	 * 새 예약을 관리자에게 알린다. 주소는 쉼표로 여럿 적을 수 있다.
+	 *
+	 * @param object $booking
+	 * @param string $addresses
+	 * @param string $subject
+	 * @param string $body
+	 * @return void
+	 */
+	protected static function sendAdminMail(object $booking, string $addresses, string $subject, string $body): void
+	{
+		foreach (array_filter(array_map('trim', explode(',', $addresses))) as $to)
+		{
+			if (!filter_var($to, FILTER_VALIDATE_EMAIL))
+			{
+				continue;
+			}
+			try
+			{
+				$mail = new \Rhymix\Framework\Mail();
+				$mail->addTo($to);
+				$mail->setSubject($subject);
+				$mail->setBody(nl2br(escape($body)));
+				$sent = $mail->send();
+				self::log($booking, self::CHANNEL_MAIL, 'admin_new', $to, $sent ? 'sent' : 'failed', $sent ? '' : 'send returned false');
+			}
+			catch (\Throwable $e)
+			{
+				self::log($booking, self::CHANNEL_MAIL, 'admin_new', $to, 'failed', $e->getMessage());
+			}
 		}
 	}
 

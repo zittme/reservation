@@ -30,6 +30,10 @@ class Credit
 			'SELECT balance FROM reservation_credit_balance WHERE member_srl = ?', $member_srl
 		);
 		$row = $stmt ? $stmt->fetchObject() : null;
+		if ($stmt)
+		{
+			$stmt->closeCursor();
+		}
 		return $row ? (int)$row->balance : 0;
 	}
 
@@ -243,6 +247,10 @@ class Credit
 			$booking_srl, 'earn'
 		);
 		$row = $stmt ? $stmt->fetchObject() : null;
+		if ($stmt)
+		{
+			$stmt->closeCursor();
+		}
 		$earned = $row ? (int)$row->s : 0;
 		if ($earned > 0)
 		{

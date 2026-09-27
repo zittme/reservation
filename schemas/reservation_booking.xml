@@ -55,6 +55,8 @@
 	<column name="extra_vars" type="text" />
 	<column name="ipaddress" type="varchar" size="60" />
 	<column name="regdate" type="char" size="14" index="idx_regdate" />
+	<!-- YYYYMMDDHHIISS. 방문 전 알림을 보낸 시각. 비어 있으면 아직 안 보냈다 -->
+	<column name="remind_sent" type="char" size="14" />
 	<column name="confirmed_date" type="char" size="14" />
 	<column name="cancelled_date" type="char" size="14" />
 	<!--

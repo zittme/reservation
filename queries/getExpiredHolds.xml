@@ -8,6 +8,7 @@
 		<column name="slot_srl" />
 		<column name="person_count" />
 		<column name="status" />
+		<column name="pay_order_srl" />
 	</columns>
 	<conditions>
 		<condition operation="equal" column="status" var="status" required="true" />

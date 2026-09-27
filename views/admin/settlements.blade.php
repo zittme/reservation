@@ -1,47 +1,47 @@
 @include('_tabs')
 
 @php
-$se_status_names = ['draft' => '집계중', 'confirmed' => '확정', 'paid' => '지급완료'];
+$se_status_names = ['draft' => $lang->rsv_settlement_status_draft, 'confirmed' => $lang->rsv_settlement_status_confirmed, 'paid' => $lang->rsv_settlement_status_paid];
 $se_today = date('Ymd');
 $se_month_start = date('Ym') . '01';
 @endphp
 
 <div class="rsva">
 	<div class="rsva-panel">
-		<h3>정산 만들기</h3>
-		<p style="margin:-8px 0 14px;font-size:13px;color:#6b7684">이용을 마친 예약만 집계합니다. 취소와 노쇼는 매출로 잡지 않습니다. 금액과 배분율은 예약 시점 값을 그대로 씁니다.</p>
+		<h3>{{ $lang->rsv_settlement_build }}</h3>
+		<p style="margin:-8px 0 14px;font-size:13px;color:#6b7684">{{ $lang->about_rsv_settlement }}</p>
 
 		<form action="{{ getUrl('') }}" method="post" class="rsva-inline">
 			<input type="hidden" name="module" value="admin" />
 			<input type="hidden" name="act" value="procReservationAdminBuildSettlement" />
 			<div>
-				<label>담당자</label>
+				<label>{{ $lang->rsv_staff }}</label>
 				<select name="staff_srl" required>
-					<option value="">선택</option>
+					<option value="">{{ $lang->rsv_adm_select }}</option>
 					@foreach ($staff_map as $s)
 					<option value="{{ (int)$s->staff_srl }}">{{ $s->name }}</option>
 					@endforeach
 				</select>
 			</div>
 			<div>
-				<label>시작일</label>
+				<label>{{ $lang->rsv_adm_start_date }}</label>
 				<input type="text" name="period_from" value="{{ $se_month_start }}" placeholder="YYYYMMDD" />
 			</div>
 			<div>
-				<label>종료일</label>
+				<label>{{ $lang->rsv_adm_end_date }}</label>
 				<input type="text" name="period_to" value="{{ $se_today }}" placeholder="YYYYMMDD" />
 			</div>
 			<div>
-				<button type="submit" class="rsva-btn rsva-btn-primary">만들기</button>
+				<button type="submit" class="rsva-btn rsva-btn-primary">{{ $lang->rsv_adm_create }}</button>
 			</div>
 		</form>
 	</div>
 
 	@if (empty($settlements))
-	<p class="rsva-empty">정산 회차가 없습니다.</p>
+	<p class="rsva-empty">{{ $lang->rsv_settlement_none }}</p>
 	@else
 	<table class="rsva-table">
-		<thead><tr><th>담당자</th><th>기간</th><th>건수</th><th>매출</th><th>담당자 몫</th><th>매장 몫</th><th>상태</th><th></th></tr></thead>
+		<thead><tr><th>{{ $lang->rsv_staff }}</th><th>{{ $lang->rsv_settlement_period }}</th><th>{{ $lang->rsv_settlement_count }}</th><th>{{ $lang->rsv_settlement_gross }}</th><th>{{ $lang->rsv_settlement_share }}</th><th>{{ $lang->rsv_settlement_store }}</th><th>{{ $lang->reservation_status }}</th><th></th></tr></thead>
 		<tbody>
 			@foreach ($settlements as $se)
 			@php
@@ -53,12 +53,12 @@ $se_month_start = date('Ym') . '01';
 				<td><strong>{{ $se_staff ? $se_staff->name : '-' }}</strong></td>
 				<td>{{ $se->period_from }} ~ {{ $se->period_to }}</td>
 				<td>{{ (int)$se->booking_count }}</td>
-				<td>{{ number_format((int)$se->gross_amount) }}원</td>
-				<td><b style="color:#2677e3">{{ number_format((int)$se->share_amount) }}원</b></td>
-				<td>{{ number_format((int)$se->store_amount) }}원</td>
+				<td>{{ sprintf($lang->reservation_price_format, number_format((int)$se->gross_amount)) }}</td>
+				<td><b style="color:#2677e3">{{ sprintf($lang->reservation_price_format, number_format((int)$se->share_amount)) }}</b></td>
+				<td>{{ sprintf($lang->reservation_price_format, number_format((int)$se->store_amount)) }}</td>
 				<td><span class="rsva-st {{ $se_status === 'draft' ? '' : 'rsva-st-confirmed' }}">{{ $se_status_names[$se_status] ?? $se_status }}</span></td>
 				<td style="text-align:right">
-					<a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminSettlementView', 'settlement_srl', $se_srl) }}" class="rsva-btn rsva-btn-sm">상세</a>
+					<a href="{{ getUrl('', 'module', 'admin', 'act', 'dispReservationAdminSettlementView', 'settlement_srl', $se_srl) }}" class="rsva-btn rsva-btn-sm">{{ $lang->rsv_adm_detail }}</a>
 				</td>
 			</tr>
 			@endforeach

@@ -37,6 +37,7 @@ class Install extends Base
 		['reservation_booking', 'coupon_issue_srl', 'bigint', 0, 0],
 		['reservation_booking', 'credit_used', 'bigint', 0, 0],
 		['reservation_booking', 'credit_earned', 'bigint', 0, 0],
+		['reservation_booking', 'remind_sent', 'char', 14, null],
 	];
 
 	/**
@@ -68,6 +69,7 @@ class Install extends Base
 	{
 		$this->prepareConfig();
 		self::createDefaultInstance();
+		\Zittme\Modules\Reservation\Models\Remind::registerQueue();
 		return new \BaseObject();
 	}
 
@@ -131,6 +133,7 @@ class Install extends Base
 		}
 
 		self::backfillServiceDate();
+		\Zittme\Modules\Reservation\Models\Remind::registerQueue();
 
 		return new \BaseObject();
 	}

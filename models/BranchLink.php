@@ -113,6 +113,11 @@ class BranchLink
 
 		try
 		{
+			// 영업시간을 하나도 적지 않은 지점은 시간 제한이 없는 것으로 본다
+			if (!count(\Zittme\Modules\Branch\Models\Branch::getHours($branch_srl)))
+			{
+				return true;
+			}
 			return \Zittme\Modules\Branch\Models\Branch::getTodayHours($branch_srl, $date) !== null;
 		}
 		catch (\Throwable $e)
@@ -139,6 +144,12 @@ class BranchLink
 
 		try
 		{
+			// 영업시간을 하나도 적지 않은 지점은 담당자 근무표만 따른다
+			if (!count(\Zittme\Modules\Branch\Models\Branch::getHours($branch_srl)))
+			{
+				return ['open' => 0, 'close' => 1440, 'break_start' => null, 'break_end' => null];
+			}
+
 			$hours = \Zittme\Modules\Branch\Models\Branch::getTodayHours($branch_srl, $date);
 			if (!$hours)
 			{

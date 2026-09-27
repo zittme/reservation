@@ -19,10 +19,10 @@
 /* 관리자 전역 a/버튼 색 규칙이 특이도로 덮으므로 색은 !important 로 고정한다 */
 .rsva-btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 13px; border: 1px solid #e5e8ee; border-radius: 9px; background: #fff !important; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; color: #1c2330 !important; text-decoration: none !important; }
 .rsva-btn:hover { border-color: #2677e3; color: #2677e3 !important; }
-.rsva-btn-primary { background: #2677e3 !important; border-color: #2677e3; color: #fff !important; }
-.rsva-btn-primary:hover { filter: brightness(1.06); color: #fff !important; }
+.rsva-btn-primary { background: #1f6ad0 !important; border-color: #1f6ad0; color: #fff !important; }
+.rsva-btn-primary:hover, .rsva-btn-primary:focus-visible { background: #1a5bb5 !important; border-color: #1a5bb5; color: #fff !important; }
 .rsva-btn-sm { padding: 4px 9px; font-size: 12px; border-radius: 7px; }
-.rsva-btn-danger:hover { border-color: #e5484d; color: #e5484d !important; }
+.rsva-btn-danger:hover { border-color: #cd2b31; color: #cd2b31 !important; }
 .rsva-panel { padding: 18px 20px; border: 1px solid #e5e8ee; border-radius: 14px; background: #fff; margin-bottom: 16px; }
 .rsva-panel h3 { margin: 0 0 12px; font-size: 15px; font-weight: 700; }
 .rsva-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
@@ -96,15 +96,15 @@ $zmc_active_alias = ['resource_edit' => 'resources', 'staff_edit' => 'staff', 's
 $zmc_current = $zmc_active_alias[$zmc_page] ?? $zmc_page;
 @endphp
 <aside class="zmc-side">
-	<div class="zmc-logo"><b>zittme</b> <span>예약 콘솔</span></div>
+	<div class="zmc-logo"><b>zittme</b> <span>{{ $lang->rsv_adm_console_title }}</span></div>
 	<nav class="zmc-nav">
 		@foreach ($zmc_menu as $key => $label)
 		<a href="{{ getUrl('', 'module', '', 'mid', '', 'act', 'dispReservationConsole', 'p', $key) }}" class="{{ $zmc_current === $key ? 'is-active' : '' }}"><span>{{ $label }}</span></a>
 		@endforeach
 	</nav>
 	<div class="zmc-side-foot">
-		<a href="{{ getUrl('', 'module', '', 'mid', '', 'act', '') }}" target="_blank">사이트 보기</a>
-		<a href="{{ getUrl('', 'mid', '', 'module', 'admin', 'act', '') }}" target="_blank">zittme 관리자</a>
+		<a href="{{ getUrl('', 'module', '', 'mid', '', 'act', '') }}" target="_blank">{{ $lang->rsv_adm_view_site }}</a>
+		<a href="{{ getUrl('', 'mid', '', 'module', 'admin', 'act', '') }}" target="_blank">{{ $lang->rsv_adm_core_admin }}</a>
 	</div>
 </aside>
 <div class="zmc-top"><h2>{{ $zmc_menu[$zmc_current] ?? '' }}</h2></div>
@@ -148,8 +148,8 @@ $zmc_current = $zmc_active_alias[$zmc_page] ?? $zmc_page;
 </div>
 
 <div class="rsva" style="margin:0 0 14px;padding:16px 20px;border:1px solid rgba(38,119,227,.35);border-radius:12px;background:#f2f6fd;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-	<div style="font-size:13.5px;color:#1c2330"><b style="color:#2677e3">예약 전용 콘솔</b>에서 관리하세요. 예약·상품·일정 운영은 별도 패널로 제공됩니다.</div>
-	<a href="{{ getUrl('', 'module', '', 'act', 'dispReservationConsole') }}" target="_blank" class="rsva-btn rsva-btn-primary" id="zmcOpenConsole">콘솔 새탭으로 열기</a>
+	<div style="font-size:13.5px;color:#1c2330">{!! sprintf($lang->rsv_adm_console_notice, '<b>' . escape($lang->rsv_adm_console_name) . '</b>') !!}</div>
+	<a href="{{ getUrl('', 'module', '', 'act', 'dispReservationConsole') }}" target="_blank" class="rsva-btn rsva-btn-primary" id="zmcOpenConsole">{{ $lang->rsv_adm_open_console }}</a>
 </div>
 @if ($rsv_tab === 'dashboard')
 <script>

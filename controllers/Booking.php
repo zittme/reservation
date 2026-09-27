@@ -85,6 +85,8 @@ class Booking extends Base
 	 */
 	public function procReservationGetTimes()
 	{
+		BookingModel::expireStaleHolds();
+
 		$resource_srl = (int)\Context::get('resource_srl');
 		$staff_srl = (int)\Context::get('staff_srl');
 		$date = preg_replace('/\D/', '', (string)\Context::get('date'));
@@ -164,6 +166,8 @@ class Booking extends Base
 	 */
 	public function procReservationGetOpenDays()
 	{
+		BookingModel::expireStaleHolds();
+
 		$resource_srl = (int)\Context::get('resource_srl');
 		$staff_srl = (int)\Context::get('staff_srl');
 		$from = preg_replace('/\D/', '', (string)\Context::get('from'));
@@ -214,6 +218,8 @@ class Booking extends Base
 	 */
 	public function procReservationSubmit()
 	{
+		BookingModel::expireStaleHolds();
+
 		$config = self::config();
 		if (($config->enabled ?? 'Y') !== 'Y')
 		{
@@ -363,6 +369,10 @@ class Booking extends Base
 			return $output;
 		}
 		$booking = $output->get('booking');
+		if ($member_srl <= 0)
+		{
+			self::grantGuestAccess((string)$booking->booking_code);
+		}
 
 		// 쿠폰 점유와 적립금 차감은 예약번호가 나온 다음에야 할 수 있다.
 		// 여기서 실패하면 예약을 되돌린다 — 자리만 잡고 혜택은 못 받은 예약을 남기지 않는다
@@ -633,8 +643,8 @@ class Booking extends Base
 				'slot_srl' => $slot_srl,
 				'staff_srl' => 0,
 				'service_date' => (string)$slot->slot_date,
-				'start_datetime' => '',
-				'end_datetime' => '',
+				'start_datetime' => self::slotDatetime((string)$slot->slot_date, (string)$slot->start_time),
+				'end_datetime' => self::slotDatetime((string)$slot->slot_date, (string)$slot->end_time),
 				'duration' => (int)($resource->duration ?? 0),
 				'occupy_minutes' => 0,
 				'price' => (int)($resource->price ?? 0),
@@ -890,7 +900,7 @@ class Booking extends Base
 				$refund = \Zittme\Modules\Zittme_pay\PayService::cancel(
 					(int)$booking->pay_order_srl,
 					lang('reservation.msg_reservation_cancel_reason'),
-					$refund_amount >= (int)$booking->amount ? 0 : $refund_amount
+					$refund_amount
 				);
 				if (empty($refund->success))
 				{
@@ -925,8 +935,12 @@ class Booking extends Base
 			return $booking;
 		}
 
+		if ((int)$booking->member_srl <= 0)
+		{
+			self::grantGuestAccess((string)$booking->booking_code);
+		}
 		$this->add('booking_code', $booking->booking_code);
-		$this->setRedirectUrl(getNotEncodedFullUrl('', 'mid', \Context::get('mid'), 'act', 'dispReservationResult', 'code', $booking->booking_code, 'gp', \Context::get('guest_password')));
+		$this->setRedirectUrl(getNotEncodedFullUrl('', 'mid', \Context::get('mid'), 'act', 'dispReservationResult', 'code', $booking->booking_code));
 	}
 
 	/**
@@ -961,7 +975,11 @@ class Booking extends Base
 			return $booking;
 		}
 
-		// 비회원 예약: 비밀번호 대조
+		// 비회원 예약: 이 세션에서 이미 확인했으면 통과, 아니면 비밀번호 대조
+		if (\Context::get('act') !== 'procReservationGuestLookup' && self::hasGuestAccess((string)$booking->booking_code))
+		{
+			return $booking;
+		}
 		$raw = (string)\Context::get('guest_password');
 		if ($raw === '' || empty($booking->guest_password)
 			|| !\Rhymix\Framework\Password::checkPassword($raw, $booking->guest_password))
@@ -980,22 +998,42 @@ class Booking extends Base
 	 */
 	protected static function calcRefundAmount(object $booking, ?object $slot): int
 	{
-		$amount = (int)$booking->amount;
-		if ($amount <= 0)
+		$paid = 0;
+		if ((int)$booking->pay_order_srl > 0 && class_exists('\Zittme\Modules\Zittme_pay\Models\Order'))
+		{
+			$order = \Zittme\Modules\Zittme_pay\Models\Order::get((int)$booking->pay_order_srl);
+			// 아직 결제되지 않은 주문(결제 대기·입금 대기)은 돌려줄 돈이 없다
+			$paid = ($order && in_array((string)$order->status, ['paid', 'partial_cancelled'], true))
+				? (int)($order->remain_amount ?? 0) : 0;
+		}
+		if ($paid <= 0)
 		{
 			return 0;
 		}
-		if (!$slot)
-		{
-			return $amount;
-		}
 
-		$slot_ts = strtotime(sprintf(
-			'%s-%s-%s %s:00',
-			substr($slot->slot_date, 0, 4), substr($slot->slot_date, 4, 2), substr($slot->slot_date, 6, 2),
-			$slot->start_time
-		));
-		$days_left = $slot_ts !== false ? max(0, (int)floor(($slot_ts - time()) / 86400)) : 0;
+		$start_ts = false;
+		$start_datetime = (string)($booking->start_datetime ?? '');
+		if (strlen($start_datetime) === 14)
+		{
+			$start_ts = strtotime(sprintf(
+				'%s-%s-%s %s:%s:%s',
+				substr($start_datetime, 0, 4), substr($start_datetime, 4, 2), substr($start_datetime, 6, 2),
+				substr($start_datetime, 8, 2), substr($start_datetime, 10, 2), substr($start_datetime, 12, 2)
+			));
+		}
+		elseif ($slot)
+		{
+			$start_ts = strtotime(sprintf(
+				'%s-%s-%s %s:00',
+				substr($slot->slot_date, 0, 4), substr($slot->slot_date, 4, 2), substr($slot->slot_date, 6, 2),
+				$slot->start_time
+			));
+		}
+		if ($start_ts === false)
+		{
+			return $paid;
+		}
+		$days_left = max(0, (int)floor(($start_ts - time()) / 86400));
 
 		$percent = 0;
 		foreach (ConfigModel::getRefundPolicy() as $days => $p)
@@ -1006,7 +1044,7 @@ class Booking extends Base
 				break;
 			}
 		}
-		return (int)floor($amount * $percent / 100);
+		return (int)floor($paid * $percent / 100);
 	}
 
 	/**

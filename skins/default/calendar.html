@@ -5,7 +5,10 @@
 <div class="rsv" id="rsv_calendar"
 	data-resource="{{ $resource->resource_srl }}"
 	data-slots-url="{{ getUrl('', 'act', 'procReservationGetSlots') }}"
-	data-form-url="{{ getUrl('', 'mid', $mid, 'act', 'dispReservationForm', 'resource_srl', $resource->resource_srl) }}">
+	data-form-url="{{ getUrl('', 'mid', $mid, 'act', 'dispReservationForm', 'resource_srl', $resource->resource_srl) }}"
+	data-dow="{{ $lang->reservation_dow }}"
+	data-remain="{{ $lang->reservation_remain }}"
+	data-full="{{ $lang->reservation_full }}">
 
 	<h2 class="rsv-title">{{ $resource->title }}</h2>
 	@if (!empty($resource->summary))

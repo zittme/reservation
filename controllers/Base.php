@@ -125,4 +125,58 @@ class Base extends \ModuleObject
 		$prefix = trim((string)(self::config()->code_prefix ?? 'R'));
 		return sprintf('%s%s-%s', $prefix !== '' ? $prefix : 'R', date('Ymd'), strtoupper(substr(bin2hex(random_bytes(4)), 0, 6)));
 	}
+
+	/**
+	 * 슬롯 날짜와 시각(HH:MM)을 14자리로 합친다.
+	 *
+	 * @param string $date YYYYMMDD
+	 * @param string $time HH:MM
+	 * @return string
+	 */
+	public static function slotDatetime(string $date, string $time): string
+	{
+		$hm = preg_replace('/\D/', '', $time);
+		if (strlen($date) !== 8 || strlen($hm) < 4)
+		{
+			return '';
+		}
+		return $date . substr($hm, 0, 4) . '00';
+	}
+
+	/**
+	 * 비회원이 본인 확인을 마친 예약번호를 세션에 남긴다.
+	 *
+	 * 비밀번호를 주소에 싣지 않기 위해서다. 주소는 기록·공유·리퍼러로 새어 나간다.
+	 *
+	 * @param string $code
+	 * @return void
+	 */
+	public static function grantGuestAccess(string $code): void
+	{
+		if ($code === '')
+		{
+			return;
+		}
+		$granted = isset($_SESSION['reservation_guest']) && is_array($_SESSION['reservation_guest']) ? $_SESSION['reservation_guest'] : [];
+		$granted[$code] = time();
+		if (count($granted) > 20)
+		{
+			asort($granted);
+			$granted = array_slice($granted, -20, null, true);
+		}
+		$_SESSION['reservation_guest'] = $granted;
+		\Rhymix\Framework\Session::checkStart(true);
+	}
+
+	/**
+	 * 이 세션이 비회원 예약에 접근할 수 있는가. 확인 후 2시간 동안 유효하다.
+	 *
+	 * @param string $code
+	 * @return bool
+	 */
+	public static function hasGuestAccess(string $code): bool
+	{
+		$at = (int)($_SESSION['reservation_guest'][$code] ?? 0);
+		return $at > 0 && time() - $at < 7200;
+	}
 }

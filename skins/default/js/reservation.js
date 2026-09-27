@@ -20,7 +20,9 @@
 		var slotsByDate = {}; // 'YYYYMMDD' -> [slot]
 		var selectedYmd = null;
 
-		var DOW = ['일', '월', '화', '수', '목', '금', '토'];
+		var DOW = (root.getAttribute('data-dow') || 'Sun,Mon,Tue,Wed,Thu,Fri,Sat').split(',');
+		var remainText = root.getAttribute('data-remain') || '%d';
+		var fullText = root.getAttribute('data-full') || '-';
 
 		function ymd(d) {
 			return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
@@ -110,7 +112,7 @@
 				label.textContent = s.start;
 				btn.appendChild(label);
 				var small = document.createElement('small');
-				small.textContent = s.available ? ('잔여 ' + s.remain) : '마감';
+				small.textContent = s.available ? remainText.replace('%d', s.remain) : fullText;
 				btn.appendChild(small);
 				if (s.available) {
 					btn.addEventListener('click', function () {
@@ -133,7 +135,28 @@
 			});
 		});
 
-		fetchMonth(render);
+		// 이번 달에 남은 자리가 없으면(월말 등) 다음 달을 먼저 보여 준다
+		fetchMonth(function () {
+			var hasAvail = Object.keys(slotsByDate).some(function (k) {
+				return slotsByDate[k].some(function (s) { return s.available; });
+			});
+			if (hasAvail) {
+				render();
+				return;
+			}
+			current.setMonth(current.getMonth() + 1);
+			fetchMonth(function () {
+				var nextAvail = Object.keys(slotsByDate).some(function (k) {
+					return slotsByDate[k].some(function (s) { return s.available; });
+				});
+				if (!nextAvail) {
+					current.setMonth(current.getMonth() - 1);
+					fetchMonth(render);
+					return;
+				}
+				render();
+			});
+		});
 	}
 
 	if (document.readyState === 'loading') {

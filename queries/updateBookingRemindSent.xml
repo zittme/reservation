@@ -1,0 +1,12 @@
+<query id="updateBookingRemindSent" action="update">
+	<tables>
+		<table name="reservation_booking" />
+	</tables>
+	<columns>
+		<column name="remind_sent" var="remind_sent" notnull="notnull" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="booking_srl" var="booking_srl" required="true" />
+		<condition operation="null" column="remind_sent" pipe="and" />
+	</conditions>
+</query>

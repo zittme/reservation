@@ -8,7 +8,7 @@ use Zittme\Modules\Reservation\Models\Booking;
  * zittme_pay 결제 통지 수신.
  *
  * 주의: 이 핸들러들은 PG 콜백 요청 안에서 실행된다 — 세션을 읽거나 쓰면 안 된다
- *    (크로스사이트 콜백에서 세션을 건드리면 원래 창의 CSRF 토큰이 무효화된다, pitfall #57).
+ *    (크로스사이트 콜백에서 세션을 건드리면 원래 창의 CSRF 토큰이 무효화된다).
  *
  * 주의: eventHandler 는 conf/module.xml 선언만으로 동작하지 않는다.
  *    모듈 설치/업데이트 1회 실행으로 DB triggers 에 등록해야 한다.
@@ -64,6 +64,18 @@ class Trigger extends Base
 		if (Booking::confirm($booking_srl, 0))
 		{
 			Booking::log($booking_srl, 'pay', (string)$booking->status, self::STATUS_CONFIRMED, 0, 'pay_order_srl=' . (int)($order->order_srl ?? 0));
+			return;
+		}
+
+		// 결제 대기 시간이 지나 자리가 이미 풀린 예약에 결제가 들어오면 돌려준다
+		$fresh = Booking::get($booking_srl);
+		if ($fresh && in_array((string)$fresh->status, [self::STATUS_EXPIRED, self::STATUS_CANCELLED], true)
+			&& (int)($order->order_srl ?? 0) > 0
+			&& class_exists('\\Zittme\\Modules\\Zittme_pay\\PayService'))
+		{
+			$refund = \Zittme\Modules\Zittme_pay\PayService::cancel((int)$order->order_srl, lang('reservation.msg_reservation_cancel_reason'));
+			Booking::log($booking_srl, 'refund', (string)$fresh->status, (string)$fresh->status, 0,
+				'late_payment pay_order_srl=' . (int)$order->order_srl . ' ' . (!empty($refund->success) ? 'refunded' : 'refund_failed'));
 		}
 	}
 
@@ -82,6 +94,12 @@ class Trigger extends Base
 
 		$booking_srl = (int)($order->source_srl ?? 0);
 		if ($booking_srl <= 0)
+		{
+			return;
+		}
+
+		// 부분 환불(관리자의 일부 금액 돌려주기 등)은 예약을 살려 둔다. 전액이 취소됐을 때만 예약도 취소한다
+		if (($order->status ?? '') !== 'cancelled')
 		{
 			return;
 		}

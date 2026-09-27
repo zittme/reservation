@@ -42,9 +42,6 @@
 		<input type="hidden" name="act" value="procReservationCancel" />
 		<input type="hidden" name="mid" value="{{ $mid }}" />
 		<input type="hidden" name="booking_code" value="{{ $booking->booking_code }}" />
-		@if ($booking->member_srl == 0)
-		<input type="hidden" name="guest_password" value="{{ escape(Context::get('gp')) }}" />
-		@endif
 		<button type="submit" class="rsv-btn rsv-btn-ghost">{{ $lang->cmd_reservation_cancel }}</button>
 	</form>
 	@endif

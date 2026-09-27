@@ -8,6 +8,7 @@ use Zittme\Modules\Reservation\Models\BranchLink;
 use Zittme\Modules\Reservation\Models\Coupon;
 use Zittme\Modules\Reservation\Models\Credit;
 use Zittme\Modules\Reservation\Models\Grade;
+use Zittme\Modules\Reservation\Models\Remind;
 use Zittme\Modules\Reservation\Models\Slot;
 use Zittme\Modules\Reservation\Models\Staff as StaffModel;
 
@@ -58,6 +59,8 @@ class Front extends Base
 	 */
 	public function dispReservationList()
 	{
+		Remind::runThrottled();
+
 		$output = executeQuery('reservation.getResourceList', (object)['status' => 'open']);
 		$resources = [];
 		if ($output->toBool() && !empty($output->data))
@@ -95,6 +98,8 @@ class Front extends Base
 	 */
 	public function dispReservationCalendar()
 	{
+		Remind::runThrottled();
+
 		$resource = $this->requireResource();
 		if ($resource instanceof \BaseObject)
 		{
@@ -196,6 +201,8 @@ class Front extends Base
 	 */
 	public function dispReservationForm()
 	{
+		Remind::runThrottled();
+
 		$resource = $this->requireResource();
 		if ($resource instanceof \BaseObject)
 		{
@@ -304,7 +311,7 @@ class Front extends Base
 	/**
 	 * 예약 결과·상세.
 	 *
-	 * 회원은 본인 예약만, 비회원은 코드+비밀번호(gp)로 접근.
+	 * 회원은 본인 예약만, 비회원은 이 세션에서 예약하거나 조회로 확인한 예약만 연다.
 	 */
 	public function dispReservationResult()
 	{
@@ -330,19 +337,7 @@ class Front extends Base
 		}
 		else
 		{
-			$gp = (string)\Context::get('gp');
-			$authorized = $gp !== '' && !empty($booking->guest_password)
-				&& \Rhymix\Framework\Password::checkPassword($gp, $booking->guest_password);
-			// 결제 복귀 직후(리다이렉트)는 비밀번호가 없다 — 방금 만든 예약(5분)만 요약 노출
-			if (!$authorized)
-			{
-				$age = time() - (strtotime(sprintf(
-					'%s-%s-%s %s:%s:%s',
-					substr($booking->regdate, 0, 4), substr($booking->regdate, 4, 2), substr($booking->regdate, 6, 2),
-					substr($booking->regdate, 8, 2), substr($booking->regdate, 10, 2), substr($booking->regdate, 12, 2)
-				)) ?: 0);
-				$authorized = $age >= 0 && $age < 300;
-			}
+			$authorized = self::hasGuestAccess((string)$booking->booking_code);
 		}
 		if (!$authorized)
 		{
@@ -366,6 +361,8 @@ class Front extends Base
 	 */
 	public function dispReservationMy()
 	{
+		Remind::runThrottled();
+
 		$logged_info = \Context::get('logged_info');
 		$member_srl = ($logged_info && $logged_info->member_srl) ? (int)$logged_info->member_srl : 0;
 
