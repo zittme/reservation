@@ -23,6 +23,15 @@
 		var DOW = (root.getAttribute('data-dow') || 'Sun,Mon,Tue,Wed,Thu,Fri,Sat').split(',');
 		var remainText = root.getAttribute('data-remain') || '%d';
 		var fullText = root.getAttribute('data-full') || '-';
+		var locale = root.getAttribute('data-locale') || document.documentElement.lang || 'ko';
+
+		function formatDate(date, options) {
+			try {
+				return date.toLocaleDateString(locale, options);
+			} catch (e) {
+				return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+			}
+		}
 
 		function ymd(d) {
 			return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
@@ -59,7 +68,7 @@
 		}
 
 		function render() {
-			monthLabel.textContent = current.getFullYear() + '. ' + (current.getMonth() + 1);
+			monthLabel.textContent = formatDate(current, { year: 'numeric', month: 'long' });
 			grid.innerHTML = '';
 			DOW.forEach(function (d) {
 				var el = document.createElement('div');
@@ -102,7 +111,7 @@
 			render();
 			var slots = slotsByDate[key] || [];
 			timesBox.hidden = false;
-			timesDate.textContent = key.slice(0, 4) + '.' + key.slice(4, 6) + '.' + key.slice(6, 8);
+			timesDate.textContent = formatDate(new Date(+key.slice(0, 4), +key.slice(4, 6) - 1, +key.slice(6, 8)), { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
 			timesGrid.innerHTML = '';
 			slots.forEach(function (s) {
 				var btn = document.createElement('button');

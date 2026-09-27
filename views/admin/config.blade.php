@@ -1,4 +1,5 @@
 @include('_tabs')
+@include('_langfield_assets')
 
 <div class="rsva">
 	<form action="{{ getUrl('') }}" method="post">
@@ -50,7 +51,7 @@
 		<div class="rsva-panel">
 			<h3>{{ $lang->rsv_adm_privacy }}</h3>
 			<div class="rsva-form-grid">
-				<div style="grid-column:1/-1"><label>{{ $lang->rsv_adm_privacy_text }}</label><textarea name="privacy_text" rows="3">{{ $rsv_config->privacy_text }}</textarea></div>
+				<div style="grid-column:1/-1"><label>{{ $lang->rsv_adm_privacy_text }}</label><div class="zlf-row-wrap"><textarea name="privacy_text" rows="3" placeholder="{{ $lang->reservation_privacy_default }}">{{ $rsv_privacy_input }}</textarea>@include('_langfield', ['lf_name' => 'privacy_text', 'lf_value' => $rsv_config->privacy_text])</div></div>
 				<div><label>{{ $lang->rsv_adm_privacy_version }}</label><input type="text" name="privacy_version" maxlength="20" value="{{ $rsv_config->privacy_version }}" /></div>
 				<div><label>{{ $lang->rsv_adm_retention }}</label><input type="number" name="retention_days" min="0" max="3650" value="{{ $rsv_config->retention_days }}" /></div>
 			</div>

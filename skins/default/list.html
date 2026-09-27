@@ -20,8 +20,8 @@
 				<span class="rsv-card-summary">{{ $r->summary }}</span>
 				@endif
 				<span class="rsv-card-meta">
-					<span class="rsv-price">{{ $r->price > 0 ? number_format($r->price) . '원' : $lang->reservation_free }}</span>
-					<span class="rsv-duration">{{ $r->duration }}분</span>
+					<span class="rsv-price">{{ $r->price > 0 ? sprintf($lang->reservation_price_format, number_format($r->price)) : $lang->reservation_free }}</span>
+					<span class="rsv-duration">{{ sprintf($lang->reservation_minutes, $r->duration) }}</span>
 				</span>
 			</span>
 		</a>

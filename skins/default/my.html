@@ -11,7 +11,7 @@
 			<strong>{{ $lang->reservation_grade }} · {{ $my_grade->title }}</strong>
 			@endif
 			@if ($rsv_config->credit_enabled === 'Y')
-			<span class="rsv-price">{{ $lang->reservation_credit_balance }} {{ number_format($credit_balance) }}원</span>
+			<span class="rsv-price">{{ $lang->reservation_credit_balance }} {{ sprintf($lang->reservation_price_format, number_format($credit_balance)) }}</span>
 			@endif
 			@if (count($my_coupons))
 			<span>{{ $lang->reservation_my_coupons }} {{ count($my_coupons) }}</span>
@@ -24,7 +24,7 @@
 			<li>
 				<span class="rsv-my-code">{{ $lang->{'reservation_credit_' . $log->type} ?? $log->type }}</span>
 				<span class="rsv-my-status">{{ (int)$log->amount > 0 ? '+' : '' }}{{ number_format((int)$log->amount) }}</span>
-				<span class="rsv-my-date">{{ zdate($log->regdate, 'Y.m.d') }}</span>
+				<span class="rsv-my-date">{{ zdate($log->regdate, $lang->reservation_date_format) }}</span>
 			</li>
 			@endforeach
 		</ul>
@@ -40,7 +40,7 @@
 				<a href="{{ getUrl('', 'mid', $mid, 'act', 'dispReservationResult', 'code', $b->booking_code) }}">
 					<span class="rsv-my-code">{{ $b->booking_code }}</span>
 					<span class="rsv-my-status rsv-st-{{ $b->status }}">{{ $lang->{'reservation_status_' . $b->status} ?? $b->status }}</span>
-					<span class="rsv-my-date">{{ zdate($b->regdate, 'Y.m.d') }}</span>
+					<span class="rsv-my-date">{{ zdate($b->regdate, $lang->reservation_date_format) }}</span>
 				</a>
 			</li>
 			@endforeach

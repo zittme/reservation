@@ -8,6 +8,7 @@ use Zittme\Modules\Reservation\Models\Config as ConfigModel;
 use Zittme\Modules\Reservation\Models\Coupon;
 use Zittme\Modules\Reservation\Models\Credit;
 use Zittme\Modules\Reservation\Models\Grade;
+use Zittme\Modules\Reservation\Models\Lang;
 use Zittme\Modules\Reservation\Models\Remind;
 use Zittme\Modules\Reservation\Models\Settlement as SettlementModel;
 use Zittme\Modules\Reservation\Models\Slot;
@@ -34,6 +35,11 @@ class Admin extends Base
 		'notify_mail', 'notify_sms', 'notify_on_booked', 'notify_on_confirmed', 'notify_on_cancelled',
 		'notify_remind', 'remind_hours', 'sms_from', 'slot_unit', 'allow_any_staff',
 	];
+
+	/**
+	 * 다국어 문구를 연결할 수 있는 설정.
+	 */
+	protected const LANG_CONFIG_FIELDS = ['privacy_text'];
 
 	protected const BOOLEAN_FIELDS = [
 		'enabled', 'allow_guest', 'notify_admin', 'credit_enabled', 'coupon_enabled',
@@ -84,7 +90,7 @@ class Admin extends Base
 			{
 				if (!empty($row->resource_srl))
 				{
-					$map[(int)$row->resource_srl] = $row;
+					$map[(int)$row->resource_srl] = Lang::resource($row);
 				}
 			}
 		}
@@ -219,7 +225,7 @@ class Admin extends Base
 			}
 		}
 
-		\Context::set('resource', $resource);
+		\Context::set('resource', $resource ? Lang::resource($resource) : null);
 		\Context::set('rules', $rules);
 		\Context::set('holidays', $holidays);
 		$this->renderView('resources', 'resource_edit');
@@ -246,7 +252,7 @@ class Admin extends Base
 		$output = executeQuery('reservation.getFormFieldList', (object)['resource_srl' => 0]);
 		$fields = ($output->toBool() && !empty($output->data)) ? (is_array($output->data) ? $output->data : [$output->data]) : [];
 
-		\Context::set('fields', $fields);
+		\Context::set('fields', Lang::formFields($fields));
 		\Context::set('resources_map', self::getAllResources());
 		$this->renderView('forms', 'forms');
 	}
@@ -286,6 +292,8 @@ class Admin extends Base
 	public function dispReservationAdminConfig()
 	{
 		\Context::set('pay_available', self::isPayAvailable());
+		$privacy = (string)(self::config()->privacy_text ?? '');
+		\Context::set('rsv_privacy_input', $privacy === ConfigModel::LEGACY_PRIVACY_TEXT ? '' : $privacy);
 
 		// 스킨 — 커머스 콘솔과 같은 방식. 기본값(/USE_DEFAULT/)이면 사이트 기본 디자인을 따른다.
 		$instance = self::getDefaultInstance();
@@ -345,6 +353,44 @@ class Admin extends Base
 	// ────────────────────────── 처리 ──────────────────────────
 
 	/**
+	 * 다국어 코드 목록 — 이미 만들어 둔 코드를 골라 쓰기 위한 검색.
+	 */
+	public function procReservationAdminGetLangCodes()
+	{
+		$rows = [];
+		foreach (Lang::search((string)\Context::get('keyword'), 40) as $row)
+		{
+			$rows[] = ['code' => $row->code, 'value' => $row->value];
+		}
+		$this->add('codes', $rows);
+	}
+
+	/**
+	 * 다국어 코드 하나의 언어별 값.
+	 */
+	public function procReservationAdminGetLangCode()
+	{
+		$code = Lang::filterCode((string)\Context::get('code'));
+		$this->add('code', $code);
+		$this->add('values', Lang::values($code));
+	}
+
+	/**
+	 * 다국어 코드 저장 — 코어 lang 테이블에 그대로 쓴다.
+	 */
+	public function procReservationAdminSaveLangCode()
+	{
+		$values = \Context::get('values');
+		$code = Lang::save((string)\Context::get('code'), is_array($values) ? $values : []);
+		if ($code === '')
+		{
+			return new \BaseObject(-1, lang('reservation.rsv_adm_lang_need_value'));
+		}
+		$this->add('code', $code);
+		$this->add('value', Lang::display($code));
+	}
+
+	/**
 	 * 설정 저장 (허용 키만).
 	 */
 	public function procReservationAdminInsertConfig()
@@ -371,6 +417,10 @@ class Admin extends Base
 			{
 				[$min, $max] = self::FLOAT_FIELDS[$key];
 				$value = max($min, min($max, round((float)$value, 2)));
+			}
+			elseif (in_array($key, self::LANG_CONFIG_FIELDS, true))
+			{
+				$value = Lang::fromRequest($key, trim((string)$value));
 			}
 			else
 			{
@@ -435,8 +485,8 @@ class Admin extends Base
 		}
 
 		$fields = (object)[
-			'title' => mb_substr($title, 0, 250),
-			'summary' => mb_substr(trim((string)\Context::get('summary')), 0, 250),
+			'title' => Lang::fromRequest('title', mb_substr($title, 0, 250)),
+			'summary' => Lang::fromRequest('summary', mb_substr(trim((string)\Context::get('summary')), 0, 250)),
 			'content' => (string)\Context::get('content'),
 			'capacity_default' => max(1, min(1000, (int)\Context::get('capacity_default'))),
 			'duration' => max(5, min(1440, (int)\Context::get('duration'))),
@@ -448,7 +498,7 @@ class Admin extends Base
 			'min_lead_minutes' => max(0, min(10080, (int)\Context::get('min_lead_minutes'))),
 			'cancel_deadline_hours' => max(0, min(720, (int)\Context::get('cancel_deadline_hours'))),
 			'booking_mode' => \Context::get('booking_mode') === 'staff' ? 'staff' : 'slot',
-			'category' => mb_substr(trim((string)\Context::get('category')), 0, 100),
+			'category' => Lang::fromRequest('category', mb_substr(trim((string)\Context::get('category')), 0, 100)),
 			'pay_mode' => in_array((string)\Context::get('pay_mode'), ['deposit', 'full'], true) ? (string)\Context::get('pay_mode') : 'none',
 			'deposit_amount' => max(0, (int)preg_replace('/\D/', '', (string)\Context::get('deposit_amount'))),
 			'status' => \Context::get('status') === 'closed' ? 'closed' : 'open',
@@ -712,9 +762,9 @@ class Admin extends Base
 			'field_srl' => getNextSequence(),
 			'resource_srl' => max(0, (int)\Context::get('resource_srl')),
 			'field_name' => $name,
-			'label' => mb_substr($label, 0, 250),
+			'label' => Lang::fromRequest('label', mb_substr($label, 0, 250)),
 			'field_type' => $type,
-			'options' => (string)\Context::get('options'),
+			'options' => Lang::fromRequest('options', (string)\Context::get('options')),
 			'required' => \Context::get('required') === 'Y' ? 'Y' : 'N',
 			'list_order' => (int)\Context::get('list_order'),
 			'is_active' => 'Y',
@@ -1163,7 +1213,7 @@ class Admin extends Base
 			$service_counts[$staff_srl] = count(StaffModel::getServiceMap($staff_srl));
 		}
 
-		\Context::set('staff_list', array_values($staff_list));
+		\Context::set('staff_list', Lang::applyAll(array_values($staff_list), Lang::STAFF_FIELDS));
 		\Context::set('staff_service_counts', $service_counts);
 		$this->renderView('staff', 'staff');
 	}
@@ -1198,7 +1248,7 @@ class Admin extends Base
 			$member_id = (is_object($member) && !empty($member->user_id)) ? (string)$member->user_id : '';
 		}
 
-		\Context::set('staff', $staff);
+		\Context::set('staff', $staff ? Lang::staff(clone $staff) : null);
 		\Context::set('staff_member_id', $member_id);
 		\Context::set('branches', BranchLink::getList());
 		\Context::set('service_map', $service_map);
@@ -1224,10 +1274,10 @@ class Admin extends Base
 			'module_srl' => self::instanceSrl(),
 			'branch_srl' => max(0, (int)\Context::get('branch_srl')),
 			'member_srl' => self::resolveMemberSrl((string)\Context::get('member_id')),
-			'name' => mb_substr($name, 0, 100),
-			'position' => mb_substr(trim((string)\Context::get('position')), 0, 100),
-			'summary' => mb_substr(trim((string)\Context::get('summary')), 0, 250),
-			'content' => (string)\Context::get('content'),
+			'name' => Lang::fromRequest('name', mb_substr($name, 0, 100)),
+			'position' => Lang::fromRequest('position', mb_substr(trim((string)\Context::get('position')), 0, 100)),
+			'summary' => Lang::fromRequest('summary', mb_substr(trim((string)\Context::get('summary')), 0, 250)),
+			'content' => Lang::fromRequest('content', (string)\Context::get('content')),
 			'thumb' => mb_substr(trim((string)\Context::get('thumb')), 0, 250),
 			'share_rate' => self::parseRate((string)\Context::get('share_rate')),
 			'status' => \Context::get('status') === StaffModel::STATUS_HIDDEN ? StaffModel::STATUS_HIDDEN : StaffModel::STATUS_ACTIVE,
@@ -1276,7 +1326,7 @@ class Admin extends Base
 
 		\Context::set('settlements', $result['list']);
 		\Context::set('page_navigation', $result['navigation']);
-		\Context::set('staff_map', StaffModel::getList($module_srl, null));
+		\Context::set('staff_map', Lang::applyAll(StaffModel::getList($module_srl, null), Lang::STAFF_FIELDS));
 		$this->renderView('settlements', 'settlements');
 	}
 
@@ -1294,7 +1344,7 @@ class Admin extends Base
 
 		\Context::set('settlement', $settlement);
 		\Context::set('items', SettlementModel::getItems($settlement_srl));
-		\Context::set('staff', StaffModel::get((int)$settlement->staff_srl));
+		\Context::set('staff', Lang::staff(StaffModel::get((int)$settlement->staff_srl)));
 		\Context::set('resources', self::getAllResources());
 		$this->renderView('settlement_view', 'settlement_view');
 	}

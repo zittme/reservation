@@ -9,6 +9,7 @@ use Zittme\Modules\Reservation\Models\Config as ConfigModel;
 use Zittme\Modules\Reservation\Models\Coupon;
 use Zittme\Modules\Reservation\Models\Credit;
 use Zittme\Modules\Reservation\Models\Grade;
+use Zittme\Modules\Reservation\Models\Lang;
 use Zittme\Modules\Reservation\Models\Notify;
 use Zittme\Modules\Reservation\Models\Slot;
 use Zittme\Modules\Reservation\Models\Staff as StaffModel;
@@ -310,7 +311,7 @@ class Booking extends Base
 			$value = trim((string)\Context::get('rf_' . $field->field_name));
 			if (($field->required ?? 'N') === 'Y' && $value === '')
 			{
-				return new \BaseObject(-1, sprintf(lang('reservation.msg_reservation_field_required'), $field->label));
+				return new \BaseObject(-1, sprintf(lang('reservation.msg_reservation_field_required'), Lang::text($field->label)));
 			}
 			if ($value !== '')
 			{
@@ -419,7 +420,7 @@ class Booking extends Base
 				'member_srl' => $member_srl,
 				// 결제로 받는 금액이다. 예약금이면 총액보다 적다
 				'amount' => $upfront,
-				'title' => trim(sprintf('%s %s', $resource->title, $plan['label'])),
+				'title' => trim(sprintf('%s %s', Lang::text($resource->title), $plan['label'])),
 				'payer' => ['name' => $booker_name, 'phone' => $booker_phone, 'email' => $booker_email],
 				'return_url' => $result_url,
 			]);
@@ -649,7 +650,7 @@ class Booking extends Base
 				'occupy_minutes' => 0,
 				'price' => (int)($resource->price ?? 0),
 				'share_rate' => -1,
-				'label' => $slot->slot_date . ' ' . $slot->start_time,
+				'label' => Lang::date((string)$slot->slot_date, (string)$slot->start_time),
 			];
 		}
 
@@ -710,7 +711,7 @@ class Booking extends Base
 			'occupy_minutes' => $before + $duration + $after,
 			'price' => (int)$resolved['price'],
 			'share_rate' => (int)$resolved['share_rate'],
-			'label' => $date . ' ' . $time,
+			'label' => Lang::date((string)$date, (string)$time),
 		];
 	}
 

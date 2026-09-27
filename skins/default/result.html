@@ -20,9 +20,9 @@
 		<dt>{{ $lang->reservation }}</dt>
 		<dd>{{ $resource->title }}</dd>
 		@endif
-		@if ($slot)
+		@if ($rsv_when)
 		<dt>{{ $lang->reservation_date }}</dt>
-		<dd>{{ substr($slot->slot_date, 0, 4) }}.{{ substr($slot->slot_date, 4, 2) }}.{{ substr($slot->slot_date, 6, 2) }} {{ $slot->start_time }} ~ {{ $slot->end_time }}</dd>
+		<dd>{{ $rsv_when }}</dd>
 		@endif
 		<dt>{{ $lang->reservation_booker_name }}</dt>
 		<dd>{{ $booking->booker_name }}</dd>
@@ -32,7 +32,7 @@
 		@endif
 		@if ($booking->amount > 0)
 		<dt>{{ $lang->reservation_amount }}</dt>
-		<dd>{{ number_format($booking->amount) }}원</dd>
+		<dd>{{ sprintf($lang->reservation_price_format, number_format($booking->amount)) }}</dd>
 		@endif
 	</dl>
 

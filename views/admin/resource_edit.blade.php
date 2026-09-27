@@ -1,4 +1,5 @@
 @include('_tabs')
+@include('_langfield_assets')
 
 <div class="rsva">
 	<div class="rsva-panel">
@@ -26,13 +27,13 @@
 			</div>
 
 			<div class="rsva-form-grid">
-				<div><label>{{ $lang->rsv_adm_name }} *</label><input type="text" name="title" required value="{{ $resource->title ?? '' }}" /></div>
-				<div><label>{{ $lang->rsv_adm_summary }}</label><input type="text" name="summary" value="{{ $resource->summary ?? '' }}" /></div>
+				<div><label>{{ $lang->rsv_adm_name }} *</label><div class="zlf-row-wrap"><input type="text" name="title" required value="{{ $resource->title ?? '' }}" />@include('_langfield', ['lf_name' => 'title', 'lf_value' => $resource->title_raw ?? ''])</div></div>
+				<div><label>{{ $lang->rsv_adm_summary }}</label><div class="zlf-row-wrap"><input type="text" name="summary" value="{{ $resource->summary ?? '' }}" />@include('_langfield', ['lf_name' => 'summary', 'lf_value' => $resource->summary_raw ?? ''])</div></div>
 				<div><label>{{ $lang->rsv_adm_capacity_default }}</label><input type="number" name="capacity_default" min="1" max="1000" value="{{ $resource->capacity_default ?? 1 }}" /></div>
 				<div><label>{{ $lang->rsv_adm_duration_min }}</label><input type="number" name="duration" min="5" max="1440" step="5" value="{{ $resource->duration ?? 60 }}" /></div>
 				<div><label>{{ $lang->rsv_adm_price_free }}</label><input type="number" name="price" min="0" value="{{ $resource->price ?? 0 }}" /></div>
 				<div><label>{{ $lang->rsv_booking_mode }}</label><select name="booking_mode"><option value="slot" @if(($resource->booking_mode ?? 'slot') !== 'staff') selected @endif>{{ $lang->rsv_booking_mode_slot }}</option><option value="staff" @if(($resource->booking_mode ?? '') === 'staff') selected @endif>{{ $lang->rsv_booking_mode_staff }}</option></select></div>
-				<div><label>{{ $lang->rsv_category }}</label><input type="text" name="category" maxlength="100" value="{{ $resource->category ?? '' }}" /></div>
+				<div><label>{{ $lang->rsv_category }}</label><div class="zlf-row-wrap"><input type="text" name="category" maxlength="100" value="{{ $resource->category ?? '' }}" />@include('_langfield', ['lf_name' => 'category', 'lf_value' => $resource->category_raw ?? ''])</div></div>
 				<div><label>{{ $lang->rsv_pay_mode }}</label><select name="pay_mode">@foreach(['none', 'deposit', 'full'] as $rsv_pm)<option value="{{ $rsv_pm }}" @if(($resource->pay_mode ?? 'none') === $rsv_pm) selected @endif>{{ $lang->{'rsv_pay_mode_' . $rsv_pm} }}</option>@endforeach</select></div>
 				<div><label>{{ $lang->rsv_deposit_amount }}</label><input type="number" name="deposit_amount" min="0" value="{{ $resource->deposit_amount ?? 0 }}" /></div>
 				<div><label>{{ $lang->rsv_adm_buffer_before }}</label><input type="number" name="buffer_before" min="0" max="240" value="{{ $resource->buffer_before ?? 0 }}" /></div>

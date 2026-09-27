@@ -8,6 +8,7 @@ use Zittme\Modules\Reservation\Models\BranchLink;
 use Zittme\Modules\Reservation\Models\Coupon;
 use Zittme\Modules\Reservation\Models\Credit;
 use Zittme\Modules\Reservation\Models\Grade;
+use Zittme\Modules\Reservation\Models\Lang;
 use Zittme\Modules\Reservation\Models\Remind;
 use Zittme\Modules\Reservation\Models\Slot;
 use Zittme\Modules\Reservation\Models\Staff as StaffModel;
@@ -86,9 +87,9 @@ class Front extends Base
 			}
 		}
 
-		\Context::set('resources', $resources);
+		\Context::set('resources', Lang::applyAll($resources, Lang::RESOURCE_FIELDS));
 		\Context::set('show_thumbs', $show_thumbs);
-		\Context::set('rsv_config', self::config());
+		\Context::set('rsv_config', self::frontConfig());
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('list');
 	}
@@ -131,6 +132,7 @@ class Front extends Base
 			// 담당자마다 값과 소요시간이 다르다. 화면에서 계산하지 않게 미리 풀어 둔다
 			foreach ($staff_list as $person)
 			{
+				Lang::staff($person);
 				$resolved = StaffModel::resolveService($resource, $person);
 				$person->resolved_price = (int)$resolved['price'];
 				$person->resolved_duration = (int)$resolved['duration'];
@@ -146,7 +148,8 @@ class Front extends Base
 
 		\Context::set('resource', $resource);
 		\Context::set('is_staff_mode', $is_staff_mode);
-		\Context::set('rsv_config', self::config());
+		\Context::set('rsv_config', self::frontConfig());
+		\Context::set('rsv_locale', (string)\Context::getLangType());
 		$this->addResourceStructuredData($resource);
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('calendar');
@@ -229,6 +232,7 @@ class Front extends Base
 			$staff = StaffModel::get((int)\Context::get('staff_srl'));
 			if ($staff)
 			{
+				$staff = Lang::staff(clone $staff);
 				$resolved = StaffModel::resolveService($resource, $staff);
 				$price = (int)$resolved['price'];
 				$duration = (int)$resolved['duration'];
@@ -259,10 +263,13 @@ class Front extends Base
 		\Context::set('staff', $staff);
 		\Context::set('pick_date', $pick_date);
 		\Context::set('pick_time', $pick_time);
+		\Context::set('rsv_when', $slot
+			? Lang::date((string)$slot->slot_date, (string)$slot->start_time) . ' ~ ' . $slot->end_time
+			: Lang::date((string)$pick_date, (string)$pick_time));
 		\Context::set('pick_price', $price);
 		\Context::set('pick_duration', $duration);
-		\Context::set('form_fields', Booking::getFormFields((int)$resource->resource_srl));
-		\Context::set('rsv_config', $config);
+		\Context::set('form_fields', Lang::formFields(Booking::getFormFields((int)$resource->resource_srl)));
+		\Context::set('rsv_config', self::frontConfig());
 		\Context::set('is_member', $logged_info && $logged_info->member_srl ? true : false);
 		/* 결제 방식이 있으면 그쪽을 따르고, 그 칸이 없던 시절의 자원은 옛 표시를 본다 */
 		$pay_mode = (string)($resource->pay_mode ?? 'none');
@@ -346,12 +353,24 @@ class Front extends Base
 
 		$slot = Slot::get((int)$booking->slot_srl);
 		$resource_output = executeQuery('reservation.getResource', (object)['resource_srl' => (int)$booking->resource_srl]);
-		$resource = ($resource_output->toBool() && is_object($resource_output->data)) ? $resource_output->data : null;
+		$resource = ($resource_output->toBool() && is_object($resource_output->data)) ? Lang::resource($resource_output->data) : null;
+
+		$when = '';
+		if ($slot)
+		{
+			$when = Lang::date((string)$slot->slot_date, (string)$slot->start_time) . ' ~ ' . $slot->end_time;
+		}
+		elseif (!empty($booking->service_date))
+		{
+			$start = (string)($booking->start_datetime ?? '');
+			$when = Lang::date((string)$booking->service_date, strlen($start) >= 12 ? substr($start, 8, 2) . ':' . substr($start, 10, 2) : '');
+		}
 
 		\Context::set('booking', $booking);
 		\Context::set('slot', $slot);
+		\Context::set('rsv_when', $when);
 		\Context::set('resource', $resource);
-		\Context::set('rsv_config', self::config());
+		\Context::set('rsv_config', self::frontConfig());
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('result');
 	}
@@ -388,7 +407,7 @@ class Front extends Base
 		\Context::set('credit_balance', $member_srl > 0 ? Credit::balanceOf($member_srl) : 0);
 		\Context::set('credit_logs', $member_srl > 0 ? Credit::getLogs($member_srl, 20) : []);
 		\Context::set('my_coupons', $member_srl > 0 ? Coupon::listMine($member_srl) : []);
-		\Context::set('rsv_config', self::config());
+		\Context::set('rsv_config', self::frontConfig());
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('my');
 	}
@@ -407,6 +426,19 @@ class Front extends Base
 		{
 			return new \BaseObject(-1, 'msg_reservation_no_resource');
 		}
-		return $resource;
+		return Lang::resource($resource);
+	}
+
+	/**
+	 * 화면용 설정. 동의 문구를 현재 언어 값으로 바꾼 사본을 준다.
+	 *
+	 * @return object
+	 */
+	protected static function frontConfig(): object
+	{
+		$config = clone self::config();
+		$config->privacy_text_raw = (string)($config->privacy_text ?? '');
+		$config->privacy_text = Lang::privacyText($config->privacy_text_raw);
+		return $config;
 	}
 }

@@ -42,7 +42,7 @@ class Staff
 			return null;
 		}
 
-		return $output->data;
+		return Lang::staff($output->data);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Staff
 		$list = [];
 		foreach ($output->data as $row)
 		{
-			$list[(int)$row->staff_srl] = $row;
+			$list[(int)$row->staff_srl] = Lang::staff($row);
 		}
 
 		return $list;

@@ -1,4 +1,5 @@
 @include('_tabs')
+@include('_langfield_assets')
 
 @php
 $st_srl = $staff ? (int)$staff->staff_srl : 0;
@@ -17,11 +18,11 @@ $st_days = explode(',', $lang->reservation_dow);
 			<div class="rsva-form-grid">
 				<div>
 					<label>{{ $lang->rsv_staff_name }}</label>
-					<input type="text" name="name" value="{{ $staff->name ?? '' }}" required />
+					<div class="zlf-row-wrap"><input type="text" name="name" value="{{ $staff->name ?? '' }}" required />@include('_langfield', ['lf_name' => 'name', 'lf_value' => $staff->name_raw ?? ''])</div>
 				</div>
 				<div>
 					<label>{{ $lang->rsv_staff_position }}</label>
-					<input type="text" name="position" value="{{ $staff->position ?? '' }}" placeholder="{{ $lang->rsv_adm_ph_position }}" />
+					<div class="zlf-row-wrap"><input type="text" name="position" value="{{ $staff->position ?? '' }}" placeholder="{{ $lang->rsv_adm_ph_position }}" />@include('_langfield', ['lf_name' => 'position', 'lf_value' => $staff->position_raw ?? ''])</div>
 				</div>
 				<div>
 					<label>{{ $lang->rsv_staff_share_rate }}</label>
@@ -58,11 +59,11 @@ $st_days = explode(',', $lang->reservation_dow);
 
 			<div class="rsva-field" style="margin-top:14px">
 				<label>{{ $lang->rsv_staff_summary }}</label>
-				<input type="text" name="summary" value="{{ $staff->summary ?? '' }}" />
+				<div class="zlf-row-wrap"><input type="text" name="summary" value="{{ $staff->summary ?? '' }}" />@include('_langfield', ['lf_name' => 'summary', 'lf_value' => $staff->summary_raw ?? ''])</div>
 			</div>
 			<div class="rsva-field">
 				<label>{{ $lang->rsv_staff_content }}</label>
-				<textarea name="content" rows="4">{{ $staff->content ?? '' }}</textarea>
+				<div class="zlf-row-wrap"><textarea name="content" rows="4">{{ $staff->content ?? '' }}</textarea>@include('_langfield', ['lf_name' => 'content', 'lf_value' => $staff->content_raw ?? ''])</div>
 			</div>
 			<div class="rsva-field">
 				<label>{{ $lang->rsv_staff_member }}</label>

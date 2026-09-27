@@ -8,6 +8,11 @@ namespace Zittme\Modules\Reservation\Models;
 class Config
 {
 	/**
+	 * 예전 기본 동의 문구. 이 값이 저장돼 있으면 언어 파일의 기본 문구로 대신한다.
+	 */
+	public const LEGACY_PRIVACY_TEXT = '예약 서비스 제공을 위해 이름, 연락처를 수집합니다. 수집된 정보는 예약 이행 및 안내 목적으로만 사용됩니다.';
+
+	/**
 	 * 기본값.
 	 *
 	 * 새 키를 추가하면 여기와 관리자 설정 화면에 함께 반영할 것.
@@ -26,7 +31,7 @@ class Config
 		// 비회원 예약 허용
 		'allow_guest' => 'Y',
 		// 개인정보 수집 동의 문구
-		'privacy_text' => '예약 서비스 제공을 위해 이름, 연락처를 수집합니다. 수집된 정보는 예약 이행 및 안내 목적으로만 사용됩니다.',
+		'privacy_text' => '',
 		'privacy_version' => '1.0',
 		// 예약 정보 보관 기간(일) — 경과 시 자동 파기 (0 = 무기한)
 		'retention_days' => 365,

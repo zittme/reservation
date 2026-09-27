@@ -7,9 +7,9 @@
 	{{-- 예약 요약 --}}
 	<div class="rsv-summary">
 		<strong>{{ $resource->title }}</strong>
-		<span>{{ substr($slot->slot_date, 0, 4) }}.{{ substr($slot->slot_date, 4, 2) }}.{{ substr($slot->slot_date, 6, 2) }} {{ $slot->start_time }} ~ {{ $slot->end_time }}</span>
+		<span>{{ $rsv_when }}</span>
 		@if ($need_pay)
-		<span class="rsv-price" id="rsv_total" data-unit="{{ $resource->price }}">{{ number_format($resource->price) }}원</span>
+		<span class="rsv-price" id="rsv_total" data-unit="{{ $resource->price }}" data-format="{{ $lang->reservation_price_format }}">{{ sprintf($lang->reservation_price_format, number_format($resource->price)) }}</span>
 		@else
 		<span class="rsv-price">{{ $lang->reservation_free }}</span>
 		@endif
@@ -87,7 +87,7 @@
 			<legend>{{ $lang->reservation_benefit }}</legend>
 
 			@if ($grade_discount > 0)
-			<p class="rsv-benefit-note">{{ $my_grade->title }} {{ $lang->reservation_grade_discount }} -{{ number_format($grade_discount) }}원</p>
+			<p class="rsv-benefit-note">{{ $my_grade->title }} {{ $lang->reservation_grade_discount }} -{{ sprintf($lang->reservation_price_format, number_format($grade_discount)) }}</p>
 			@endif
 
 			@if ($coupon_enabled)
@@ -96,7 +96,7 @@
 				<select name="coupon_issue_srl" id="rsv_coupon">
 					<option value="0">{{ $lang->reservation_coupon_none }}</option>
 					@foreach ($my_coupons as $mine)
-					<option value="{{ $mine->issue_srl }}">{{ $mine->coupon->title }} (-{{ number_format($mine->discount) }}원)</option>
+					<option value="{{ $mine->issue_srl }}">{{ $mine->coupon->title }} (-{{ sprintf($lang->reservation_price_format, number_format($mine->discount)) }})</option>
 					@endforeach
 				</select>
 			</div>
@@ -138,6 +138,6 @@ window.rsvUpdateTotal = function(n) {
 	var el = document.getElementById('rsv_total');
 	if (!el) return;
 	var unit = parseInt(el.getAttribute('data-unit'), 10) || 0;
-	el.textContent = (unit * (parseInt(n, 10) || 1)).toLocaleString() + '원';
+	el.textContent = (el.getAttribute('data-format') || '%s').replace('%s', (unit * (parseInt(n, 10) || 1)).toLocaleString());
 };
 </script>

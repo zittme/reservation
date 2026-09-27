@@ -69,6 +69,9 @@
 		<action name="procReservationAdminManualBooking" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminGetBookings" class="Controllers\Admin" permission="manager" />
 		<action name="procReservationAdminCloseSlot" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminGetLangCodes" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminGetLangCode" class="Controllers\Admin" permission="manager" />
+		<action name="procReservationAdminSaveLangCode" class="Controllers\Admin" permission="manager" />
 	</actions>
 
 	<menus>

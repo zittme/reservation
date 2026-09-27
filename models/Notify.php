@@ -130,13 +130,9 @@ class Notify
 	protected static function buildContext(object $booking, array $extra): array
 	{
 		$date = (string)($booking->service_date ?? '');
-		$when = $date !== '' ? substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2) : '';
-
 		$start = (string)($booking->start_datetime ?? '');
-		if ($start !== '' && strlen($start) >= 12)
-		{
-			$when .= ' ' . substr($start, 8, 2) . ':' . substr($start, 10, 2);
-		}
+		$time = ($start !== '' && strlen($start) >= 12) ? substr($start, 8, 2) . ':' . substr($start, 10, 2) : '';
+		$when = $date !== '' ? Lang::date($date, $time) : '';
 
 		$context = [
 			'name' => (string)($booking->booker_name ?? ''),
@@ -153,14 +149,14 @@ class Notify
 			$output = executeQuery('reservation.getResource', (object)['resource_srl' => $resource_srl]);
 			if ($output->toBool() && is_object($output->data))
 			{
-				$context['service'] = (string)$output->data->title;
+				$context['service'] = Lang::text($output->data->title);
 			}
 		}
 
 		$staff = Staff::get((int)($booking->staff_srl ?? 0));
 		if ($staff)
 		{
-			$context['staff'] = (string)$staff->name;
+			$context['staff'] = Lang::text($staff->name);
 		}
 
 		return array_merge($context, $extra);

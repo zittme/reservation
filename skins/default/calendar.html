@@ -8,23 +8,24 @@
 	data-form-url="{{ getUrl('', 'mid', $mid, 'act', 'dispReservationForm', 'resource_srl', $resource->resource_srl) }}"
 	data-dow="{{ $lang->reservation_dow }}"
 	data-remain="{{ $lang->reservation_remain }}"
-	data-full="{{ $lang->reservation_full }}">
+	data-full="{{ $lang->reservation_full }}"
+	data-locale="{{ $rsv_locale }}">
 
 	<h2 class="rsv-title">{{ $resource->title }}</h2>
 	@if (!empty($resource->summary))
 	<p class="rsv-desc">{{ $resource->summary }}</p>
 	@endif
 	<p class="rsv-meta-line">
-		<span class="rsv-price">{{ $resource->price > 0 ? number_format($resource->price) . '원' : $lang->reservation_free }}</span>
-		<span class="rsv-duration">{{ $resource->duration }}분</span>
+		<span class="rsv-price">{{ $resource->price > 0 ? sprintf($lang->reservation_price_format, number_format($resource->price)) : $lang->reservation_free }}</span>
+		<span class="rsv-duration">{{ sprintf($lang->reservation_minutes, $resource->duration) }}</span>
 	</p>
 
 	{{-- 달력 --}}
 	<div class="rsv-cal">
 		<div class="rsv-cal-head">
-			<button type="button" class="rsv-cal-nav" data-nav="-1" aria-label="이전 달"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+			<button type="button" class="rsv-cal-nav" data-nav="-1" aria-label="{{ $lang->reservation_prev_month }}"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 			<strong class="rsv-cal-month" id="rsv_cal_month"></strong>
-			<button type="button" class="rsv-cal-nav" data-nav="1" aria-label="다음 달"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+			<button type="button" class="rsv-cal-nav" data-nav="1" aria-label="{{ $lang->reservation_next_month }}"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 		</div>
 		<div class="rsv-cal-grid" id="rsv_cal_grid" role="grid"></div>
 	</div>

@@ -1,4 +1,5 @@
 @include('_tabs')
+@include('_langfield_assets')
 
 <div class="rsva">
 	<div class="rsva-panel">
@@ -36,7 +37,7 @@
 			<input type="hidden" name="module" value="admin" />
 			<input type="hidden" name="act" value="procReservationAdminInsertField" />
 			<div class="rsva-inline">
-				<div><label>{{ $lang->rsv_adm_label }} *</label><input type="text" name="label" placeholder="{{ $lang->rsv_adm_ph_label }}" required /></div>
+				<div><label>{{ $lang->rsv_adm_label }} *</label><div class="zlf-row-wrap"><input type="text" name="label" placeholder="{{ $lang->rsv_adm_ph_label }}" required />@include('_langfield', ['lf_name' => 'label', 'lf_value' => ''])</div></div>
 				<div><label>{{ $lang->rsv_adm_field_name }} * {{ $lang->rsv_adm_field_name_hint }}</label><input type="text" name="field_name" placeholder="request" pattern="[a-z0-9_]+" required /></div>
 				<div><label>{{ $lang->rsv_adm_field_type }}</label><select name="field_type"><option value="text">{{ $lang->rsv_adm_type_text }}</option><option value="textarea">{{ $lang->rsv_adm_type_textarea }}</option><option value="select">{{ $lang->rsv_adm_type_select }}</option><option value="checkbox">{{ $lang->rsv_adm_type_checkbox }}</option><option value="tel">{{ $lang->rsv_adm_type_tel }}</option></select></div>
 				<div><label>{{ $lang->rsv_adm_required }}</label><select name="required"><option value="N">{{ $lang->rsv_adm_optional }}</option><option value="Y">{{ $lang->rsv_adm_required }}</option></select></div>
@@ -54,7 +55,7 @@
 			</div>
 			<div class="rsva-field" style="margin-top:10px;max-width:420px">
 				<label>{{ $lang->rsv_adm_select_options }}</label>
-				<textarea name="options" rows="3" placeholder="{{ $lang->rsv_adm_option }}1&#10;{{ $lang->rsv_adm_option }}2"></textarea>
+				<div class="zlf-row-wrap"><textarea name="options" rows="3" placeholder="{{ $lang->rsv_adm_option }}1&#10;{{ $lang->rsv_adm_option }}2"></textarea>@include('_langfield', ['lf_name' => 'options', 'lf_value' => ''])</div>
 			</div>
 		</form>
 	</div>
