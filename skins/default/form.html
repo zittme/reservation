@@ -2,6 +2,7 @@
 @load('css/reservation.css')
 
 <div class="rsv rsv-narrow">
+	@include('_manage')
 	<h2 class="rsv-title">{{ $lang->cmd_reservation_book }}</h2>
 
 	{{-- 예약 요약 --}}
@@ -109,7 +110,7 @@
 			@if ($credit_enabled && $credit_usable > 0)
 			<div class="rsv-row">
 				<label for="rsv_credit">{{ $lang->reservation_credit }}</label>
-				<input type="number" name="credit_use" id="rsv_credit" value="0" min="0" max="{{ $credit_usable }}" step="100" />
+				<input type="number" name="credit_use" id="rsv_credit" value="0" min="0" max="{{ $credit_usable }}" step="1" />
 				<small>{{ sprintf($lang->reservation_credit_usable, number_format($credit_usable), number_format($credit_balance)) }}</small>
 			</div>
 			@endif

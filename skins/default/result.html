@@ -2,6 +2,7 @@
 @load('css/reservation.css')
 
 <div class="rsv rsv-narrow">
+	@include('_manage')
 	<div class="rsv-result-head rsv-result-{{ $booking->status }}">
 		@if ($booking->status === 'confirmed')
 		<span class="rsv-result-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6z"/></svg></span>

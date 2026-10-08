@@ -455,3 +455,17 @@ $lang->rsv_adm_lang_empty = 'No phrases yet. Please create one.';
 $lang->rsv_adm_lang_list_failed = 'The list could not be loaded.';
 $lang->reservation_date_format = 'Y-m-d';
 $lang->reservation_privacy_default = 'We collect your name and contact details to provide the booking service. This information is used only to carry out and communicate about your booking.';
+
+// 1.0.2
+$lang->msg_reservation_too_many_detail = 'You have reached the limit of active bookings (%1$d upcoming / limit %2$d). Past bookings are not counted. Cancel an existing booking or try again after your visit.';
+$lang->msg_rsv_settlement_err_need_staff = 'Please choose the person to pay out.';
+$lang->msg_rsv_settlement_err_need_period = 'Please enter valid start and end dates.';
+$lang->msg_rsv_settlement_err_period_order = 'The start date is after the end date. Please check the period.';
+$lang->msg_rsv_settlement_err_empty = 'There are no bookings to pay out for this person in that period.';
+$lang->msg_rsv_settlement_err_save_failed = 'The payout could not be saved. Please try again shortly.';
+$lang->rsv_settlement_err_empty_help = 'A payout only includes bookings marked as "Completed" that are not already in another payout. Mark finished bookings "Complete" in the booking list, then try again.';
+$lang->rsv_settlement_back = 'Back to payouts';
+$lang->rsv_settlement_go_bookings = 'Open booking list';
+$lang->rsv_manage_title = 'Operator menu';
+$lang->rsv_manage_console = 'Booking console';
+$lang->rsv_manage_admin = 'Admin';

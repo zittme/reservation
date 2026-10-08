@@ -116,6 +116,96 @@ class Base extends \ModuleObject
 	}
 
 	/**
+	 * 금액 입력값을 정수 금액으로 읽는다. 천 단위 쉼표·공백·통화 기호는 무시하고 소수점 아래는 버린다.
+	 *
+	 * @param string $value
+	 * @return int
+	 */
+	public static function amountFromInput(string $value): int
+	{
+		$value = preg_replace('/[^0-9.]/', '', $value);
+		if ($value === '' || !is_numeric($value))
+		{
+			return 0;
+		}
+		return max(0, (int)floor((float)$value));
+	}
+
+	/**
+	 * 영업 시간대. 사이트 설정의 시간대, 없으면 전체 기본 시간대를 쓴다.
+	 *
+	 * 예약 시각(슬롯·시작 시각)은 매장 현지의 벽시계 시각으로 저장된다.
+	 * 지금 시각과 비교할 때는 반드시 이 시간대로 맞춰야 한다.
+	 *
+	 * @return \DateTimeZone
+	 */
+	public static function siteTimezone(): \DateTimeZone
+	{
+		static $cache = [];
+		$name = (string)(\Context::get('_default_timezone') ?: \Rhymix\Framework\Config::get('locale.default_timezone') ?: date_default_timezone_get());
+		if (!isset($cache[$name]))
+		{
+			try
+			{
+				$cache[$name] = new \DateTimeZone($name);
+			}
+			catch (\Exception $e)
+			{
+				$cache[$name] = new \DateTimeZone(date_default_timezone_get());
+			}
+		}
+		return $cache[$name];
+	}
+
+	/**
+	 * 영업 시간대 기준으로 시각을 적는다.
+	 *
+	 * @param string $format date() 형식
+	 * @param ?int $timestamp 없으면 지금
+	 * @return string
+	 */
+	public static function localDate(string $format, ?int $timestamp = null): string
+	{
+		$datetime = new \DateTime('@' . ($timestamp ?? time()));
+		$datetime->setTimezone(self::siteTimezone());
+		return $datetime->format($format);
+	}
+
+	/**
+	 * 영업 시간대 기준 오늘에서 며칠 더한 날짜 (YYYYMMDD).
+	 *
+	 * @param int $days
+	 * @return string
+	 */
+	public static function localDay(int $days = 0): string
+	{
+		$datetime = new \DateTime('now', self::siteTimezone());
+		if ($days !== 0)
+		{
+			$datetime->modify(sprintf('%+d day', $days));
+		}
+		return $datetime->format('Ymd');
+	}
+
+	/**
+	 * 영업 시간대의 벽시계 시각(YYYYMMDD[HHII[SS]])을 유닉스 시각으로 바꾼다.
+	 *
+	 * @param string $datetime
+	 * @return int|false
+	 */
+	public static function localTimestamp(string $datetime)
+	{
+		$digits = preg_replace('/\D/', '', $datetime);
+		if (strlen($digits) < 8)
+		{
+			return false;
+		}
+		$digits = str_pad(substr($digits, 0, 14), 14, '0');
+		$parsed = \DateTime::createFromFormat('YmdHis', $digits, self::siteTimezone());
+		return $parsed ? $parsed->getTimestamp() : false;
+	}
+
+	/**
 	 * 예약번호 생성. 예: R20260730-4F7A2C
 	 *
 	 * @return string

@@ -2,6 +2,7 @@
 @load('css/reservation.css')
 
 <div class="rsv">
+	@include('_manage')
 	<h2 class="rsv-title">{{ $lang->reservation }}</h2>
 
 	@if (empty($resources))

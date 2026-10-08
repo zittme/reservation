@@ -8,6 +8,11 @@
 .rsv * { box-sizing: border-box; }
 .rsv a { text-decoration: none; color: inherit; }
 
+.rsv-manage { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin: 0 0 14px; padding: 8px 10px; border: 1px dashed var(--rsv-border); border-radius: 10px; background: var(--rsv-bg); font-size: 13px; }
+.rsv-manage-label { margin-right: auto; color: var(--rsv-sub); font-weight: 600; }
+.rsv .rsv-manage-btn { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border: 1px solid var(--rsv-border); border-radius: 8px; background: #fff; color: var(--rsv-text); font-weight: 600; }
+.rsv .rsv-manage-btn:hover, .rsv .rsv-manage-btn:focus-visible { border-color: var(--rsv-brand); background: var(--rsv-brand); color: #fff; }
+
 .rsv-title { margin: 0 0 8px; font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
 .rsv-sub-title { margin: 24px 0 12px; font-size: 17px; font-weight: 700; }
 .rsv-desc { margin: 0 0 16px; font-size: 15px; line-height: 1.7; color: var(--rsv-sub); }

@@ -10,6 +10,7 @@
 	data-remain="{{ $lang->reservation_remain }}"
 	data-full="{{ $lang->reservation_full }}"
 	data-locale="{{ $rsv_locale }}">
+	@include('_manage')
 
 	<h2 class="rsv-title">{{ $resource->title }}</h2>
 	@if (!empty($resource->summary))

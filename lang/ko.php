@@ -455,3 +455,17 @@ $lang->rsv_adm_lang_empty = '등록된 문구가 없습니다. 새로 만들어 
 $lang->rsv_adm_lang_list_failed = '목록을 불러오지 못했습니다.';
 $lang->reservation_date_format = 'Y.m.d';
 $lang->reservation_privacy_default = '예약 서비스 제공을 위해 이름, 연락처를 수집합니다. 수집된 정보는 예약 이행 및 안내 목적으로만 사용됩니다.';
+
+// 1.0.2
+$lang->msg_reservation_too_many_detail = '동시에 유지할 수 있는 예약 수를 초과했습니다. (다가오는 예약 %1$d건 / 상한 %2$d건) 지난 예약은 세지 않습니다. 기존 예약을 취소하거나 방문 후 다시 시도해 주세요.';
+$lang->msg_rsv_settlement_err_need_staff = '정산할 담당자를 선택해 주세요.';
+$lang->msg_rsv_settlement_err_need_period = '시작일과 종료일을 올바른 날짜로 입력해 주세요.';
+$lang->msg_rsv_settlement_err_period_order = '시작일이 종료일보다 늦습니다. 기간을 다시 확인해 주세요.';
+$lang->msg_rsv_settlement_err_empty = '그 기간에 이 담당자가 정산할 예약이 없습니다.';
+$lang->msg_rsv_settlement_err_save_failed = '정산 회차를 저장하지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+$lang->rsv_settlement_err_empty_help = '정산에는 상태가 「이용 완료」이고 아직 다른 회차에 들어가지 않은 예약만 들어갑니다. 예약 목록에서 이용을 마친 예약을 「완료」로 바꾼 뒤 다시 만들어 주세요.';
+$lang->rsv_settlement_back = '정산 목록으로 돌아가기';
+$lang->rsv_settlement_go_bookings = '예약 목록 열기';
+$lang->rsv_manage_title = '운영자 메뉴';
+$lang->rsv_manage_console = '예약 콘솔';
+$lang->rsv_manage_admin = '관리자 화면';

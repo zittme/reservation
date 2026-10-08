@@ -26,7 +26,7 @@
 					<small>{{ $lang->rsv_adm_credit_help }}</small>
 				</div>
 				<div><label>{{ $lang->rsv_adm_credit_rate }}</label><input type="number" name="credit_rate" min="0" max="100" step="0.1" value="{{ $rsv_config->credit_rate }}" /><small>{{ $lang->rsv_adm_credit_rate_help }}</small></div>
-				<div><label>{{ $lang->rsv_adm_credit_min_use }}</label><input type="number" name="credit_min_use" min="0" step="1000" value="{{ $rsv_config->credit_min_use }}" /><small>{{ $lang->rsv_adm_zero_no_limit }}</small></div>
+				<div><label>{{ $lang->rsv_adm_credit_min_use }}</label><input type="number" name="credit_min_use" min="0" step="1" value="{{ $rsv_config->credit_min_use }}" /><small>{{ $lang->rsv_adm_zero_no_limit }}</small></div>
 				<div><label>{{ $lang->rsv_adm_credit_max_rate }}</label><input type="number" name="credit_max_use_rate" min="0" max="100" step="1" value="{{ $rsv_config->credit_max_use_rate }}" /><small>{{ $lang->rsv_adm_credit_max_rate_help }}</small></div>
 				<div>
 					<label>{{ $lang->reservation_coupon }}</label>

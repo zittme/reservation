@@ -90,6 +90,7 @@ class Front extends Base
 		\Context::set('resources', Lang::applyAll($resources, Lang::RESOURCE_FIELDS));
 		\Context::set('show_thumbs', $show_thumbs);
 		\Context::set('rsv_config', self::frontConfig());
+		$this->setManageLinks();
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('list');
 	}
@@ -151,6 +152,7 @@ class Front extends Base
 		\Context::set('rsv_config', self::frontConfig());
 		\Context::set('rsv_locale', (string)\Context::getLangType());
 		$this->addResourceStructuredData($resource);
+		$this->setManageLinks();
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('calendar');
 	}
@@ -311,6 +313,7 @@ class Front extends Base
 		\Context::set('upfront_amount', $upfront);
 		\Context::set('need_pay', $upfront > 0);
 		\Context::set('pay_available', self::isPayAvailable());
+		$this->setManageLinks();
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('form');
 	}
@@ -371,6 +374,7 @@ class Front extends Base
 		\Context::set('rsv_when', $when);
 		\Context::set('resource', $resource);
 		\Context::set('rsv_config', self::frontConfig());
+		$this->setManageLinks();
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('result');
 	}
@@ -408,6 +412,7 @@ class Front extends Base
 		\Context::set('credit_logs', $member_srl > 0 ? Credit::getLogs($member_srl, 20) : []);
 		\Context::set('my_coupons', $member_srl > 0 ? Coupon::listMine($member_srl) : []);
 		\Context::set('rsv_config', self::frontConfig());
+		$this->setManageLinks();
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('my');
 	}
@@ -440,5 +445,26 @@ class Front extends Base
 		$config->privacy_text_raw = (string)($config->privacy_text ?? '');
 		$config->privacy_text = Lang::privacyText($config->privacy_text_raw);
 		return $config;
+	}
+
+	/**
+	 * 사이트 관리자에게만 보이는 운영 바로가기(관리자 화면·예약 콘솔).
+	 *
+	 * 스킨과 테마는 $rsv_manage_links 가 비어 있지 않을 때만 버튼을 그린다.
+	 *
+	 * @return void
+	 */
+	protected function setManageLinks(): void
+	{
+		$logged_info = \Context::get('logged_info');
+		if (!$logged_info || ($logged_info->is_admin ?? 'N') !== 'Y')
+		{
+			\Context::set('rsv_manage_links', []);
+			return;
+		}
+		\Context::set('rsv_manage_links', [
+			'admin' => getUrl('', 'module', 'admin', 'act', 'dispReservationAdminDashboard'),
+			'console' => getUrl('', 'act', 'dispReservationConsole'),
+		]);
 	}
 }

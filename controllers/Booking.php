@@ -50,8 +50,8 @@ class Booking extends Base
 		}
 
 		// 예약 가능 창(min_lead ~ max_advance) 밖은 잘라낸다
-		$min_dt = date('YmdHi', time() + 60 * max(0, (int)$resource->min_lead_minutes));
-		$max_date = date('Ymd', strtotime('+' . max(1, (int)$resource->max_advance_days) . ' day'));
+		$min_dt = self::localDate('YmdHi', time() + 60 * max(0, (int)$resource->min_lead_minutes));
+		$max_date = self::localDay(max(1, (int)$resource->max_advance_days));
 
 		$slots = [];
 		foreach (Slot::getRange($resource_srl, $from, $to) as $slot)
@@ -297,10 +297,12 @@ class Booking extends Base
 			$output = executeQuery('reservation.getActiveCountByMember', (object)[
 				'member_srl' => $member_srl,
 				'status_list' => implode(',', self::OCCUPYING_STATUSES),
+				'from_date' => self::localDay(),
 			]);
-			if ($output->toBool() && (int)($output->data->count ?? 0) >= $max_active)
+			$active_count = $output->toBool() ? (int)($output->data->count ?? 0) : 0;
+			if ($active_count >= $max_active)
 			{
-				return new \BaseObject(-1, 'msg_reservation_too_many');
+				return new \BaseObject(-1, sprintf(lang('reservation.msg_reservation_too_many_detail'), $active_count, $max_active));
 			}
 		}
 
@@ -633,7 +635,7 @@ class Booking extends Base
 			}
 
 			$slot_dt = $slot->slot_date . str_replace(':', '', $slot->start_time);
-			if ($slot_dt < date('YmdHi', time() + 60 * max(0, (int)$resource->min_lead_minutes)))
+			if ($slot_dt < self::localDate('YmdHi', time() + 60 * max(0, (int)$resource->min_lead_minutes)))
 			{
 				return new \BaseObject(-1, 'msg_reservation_too_late');
 			}
@@ -866,24 +868,7 @@ class Booking extends Base
 		// 취소 마감 검사. 담당자 모드는 슬롯이 없으므로 예약 행의 시작 시각을 본다
 		if ($resource)
 		{
-			$start_ts = false;
-			$start_datetime = (string)($booking->start_datetime ?? '');
-			if (strlen($start_datetime) === 14)
-			{
-				$start_ts = strtotime(sprintf(
-					'%s-%s-%s %s:%s:%s',
-					substr($start_datetime, 0, 4), substr($start_datetime, 4, 2), substr($start_datetime, 6, 2),
-					substr($start_datetime, 8, 2), substr($start_datetime, 10, 2), substr($start_datetime, 12, 2)
-				));
-			}
-			elseif ($slot)
-			{
-				$start_ts = strtotime(sprintf(
-					'%s-%s-%s %s:00',
-					substr($slot->slot_date, 0, 4), substr($slot->slot_date, 4, 2), substr($slot->slot_date, 6, 2),
-					$slot->start_time
-				));
-			}
+			$start_ts = self::getBookingStartTimestamp($booking, $slot);
 
 			$deadline_hours = max(0, (int)$resource->cancel_deadline_hours);
 			if ($start_ts !== false && time() > $start_ts - 3600 * $deadline_hours)
@@ -1012,24 +997,7 @@ class Booking extends Base
 			return 0;
 		}
 
-		$start_ts = false;
-		$start_datetime = (string)($booking->start_datetime ?? '');
-		if (strlen($start_datetime) === 14)
-		{
-			$start_ts = strtotime(sprintf(
-				'%s-%s-%s %s:%s:%s',
-				substr($start_datetime, 0, 4), substr($start_datetime, 4, 2), substr($start_datetime, 6, 2),
-				substr($start_datetime, 8, 2), substr($start_datetime, 10, 2), substr($start_datetime, 12, 2)
-			));
-		}
-		elseif ($slot)
-		{
-			$start_ts = strtotime(sprintf(
-				'%s-%s-%s %s:00',
-				substr($slot->slot_date, 0, 4), substr($slot->slot_date, 4, 2), substr($slot->slot_date, 6, 2),
-				$slot->start_time
-			));
-		}
+		$start_ts = self::getBookingStartTimestamp($booking, $slot);
 		if ($start_ts === false)
 		{
 			return $paid;
@@ -1089,5 +1057,26 @@ class Booking extends Base
 		}
 		$data = is_array($output->data) ? $output->data : [$output->data];
 		return array_values(array_filter($data, function($row) { return !empty($row->field_srl); }));
+	}
+
+	/**
+	 * 예약 시작 시각(유닉스 시각). 예약 행의 시작 시각, 없으면 슬롯 시각을 영업 시간대로 읽는다.
+	 *
+	 * @param object $booking
+	 * @param ?object $slot
+	 * @return int|false
+	 */
+	protected static function getBookingStartTimestamp(object $booking, ?object $slot)
+	{
+		$start_datetime = (string)($booking->start_datetime ?? '');
+		if (strlen($start_datetime) === 14)
+		{
+			return self::localTimestamp($start_datetime);
+		}
+		if ($slot && !empty($slot->slot_date))
+		{
+			return self::localTimestamp($slot->slot_date . str_replace(':', '', (string)$slot->start_time));
+		}
+		return false;
 	}
 }

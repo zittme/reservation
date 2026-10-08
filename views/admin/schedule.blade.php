@@ -59,8 +59,8 @@
 					@endforeach
 				</select>
 			</div>
-			<div><label>{{ $lang->rsv_adm_start_date }}</label><input type="date" id="rsva_s_from" value="{{ date('Y-m-d') }}" /></div>
-			<div><label>{{ $lang->rsv_adm_end_date }}</label><input type="date" id="rsva_s_to" value="{{ date('Y-m-d', strtotime('+7 day')) }}" /></div>
+			<div><label>{{ $lang->rsv_adm_start_date }}</label><input type="date" id="rsva_s_from" value="{{ \Zittme\Modules\Reservation\Controllers\Base::localDate('Y-m-d') }}" /></div>
+			<div><label>{{ $lang->rsv_adm_end_date }}</label><input type="date" id="rsva_s_to" value="{{ \Zittme\Modules\Reservation\Controllers\Base::localDate('Y-m-d', time() + 7 * 86400) }}" /></div>
 			<div><button type="button" class="rsva-btn" onclick="rsvaLoadScheduleSlots()">{{ $lang->rsv_adm_search_btn }}</button></div>
 		</div>
 		<div id="rsva_s_result" class="rsva-empty">{{ $lang->rsv_adm_pick_then_view }}</div>

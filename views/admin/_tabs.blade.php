@@ -33,6 +33,10 @@
 .rsva-inline { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
 .rsva-inline > div { min-width: 90px; }
 .rsva-empty { padding: 32px 0; text-align: center; color: #6b7684; font-size: 13px; }
+.rsva-alert { margin: 0 0 16px; padding: 14px 16px; border: 1px solid #f3c2c2; border-radius: 10px; background: #fff5f5; color: #9b1c1c; font-size: 14px; }
+.rsva-alert p { margin: 0; font-weight: 600; }
+.rsva-alert .rsva-alert-sub { margin-top: 6px; font-weight: 400; color: #5b2a2a; font-size: 13px; }
+.rsva-alert-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .rsva-weekdays { display: flex; gap: 6px; flex-wrap: wrap; }
 .rsva-weekdays label { display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; border: 1px solid #e5e8ee; border-radius: 8px; font-size: 12px; cursor: pointer; margin: 0; font-weight: 500; }
 @media (max-width: 768px) { .rsva-table { display: block; overflow-x: auto; } }

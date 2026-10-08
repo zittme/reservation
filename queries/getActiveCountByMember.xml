@@ -8,5 +8,6 @@
 	<conditions>
 		<condition operation="equal" column="member_srl" var="member_srl" required="true" />
 		<condition operation="in" column="status" var="status_list" pipe="and" required="true" />
+		<condition operation="more" column="service_date" var="from_date" pipe="and" />
 	</conditions>
 </query>

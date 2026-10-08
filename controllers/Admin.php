@@ -107,8 +107,8 @@ class Admin extends Base
 		BookingModel::expireStaleHolds();
 		Remind::runThrottled();
 
-		$today = date('Ymd');
-		$week_end = date('Ymd', strtotime('+6 day'));
+		$today = self::localDay();
+		$week_end = self::localDay(6);
 		$active = implode(',', self::OCCUPYING_STATUSES);
 
 		$count = function(array $args): int {
@@ -262,8 +262,8 @@ class Admin extends Base
 	 */
 	public function dispReservationAdminStats()
 	{
-		$from = preg_replace('/\D/', '', (string)\Context::get('f_from')) ?: date('Ymd', strtotime('-29 day'));
-		$to = preg_replace('/\D/', '', (string)\Context::get('f_to')) ?: date('Ymd');
+		$from = preg_replace('/\D/', '', (string)\Context::get('f_from')) ?: self::localDay(-29);
+		$to = preg_replace('/\D/', '', (string)\Context::get('f_to')) ?: self::localDay();
 
 		$count = function(string $status_list) use ($from, $to): int {
 			$output = executeQuery('reservation.getBookingCount', (object)[
@@ -490,7 +490,7 @@ class Admin extends Base
 			'content' => (string)\Context::get('content'),
 			'capacity_default' => max(1, min(1000, (int)\Context::get('capacity_default'))),
 			'duration' => max(5, min(1440, (int)\Context::get('duration'))),
-			'price' => max(0, (int)preg_replace('/\D/', '', (string)\Context::get('price'))),
+			'price' => self::amountFromInput((string)\Context::get('price')),
 			'require_payment' => \Context::get('require_payment') === 'Y' ? 'Y' : 'N',
 			'buffer_before' => max(0, min(240, (int)\Context::get('buffer_before'))),
 			'buffer_after' => max(0, min(240, (int)\Context::get('buffer_after'))),
@@ -500,7 +500,7 @@ class Admin extends Base
 			'booking_mode' => \Context::get('booking_mode') === 'staff' ? 'staff' : 'slot',
 			'category' => Lang::fromRequest('category', mb_substr(trim((string)\Context::get('category')), 0, 100)),
 			'pay_mode' => in_array((string)\Context::get('pay_mode'), ['deposit', 'full'], true) ? (string)\Context::get('pay_mode') : 'none',
-			'deposit_amount' => max(0, (int)preg_replace('/\D/', '', (string)\Context::get('deposit_amount'))),
+			'deposit_amount' => self::amountFromInput((string)\Context::get('deposit_amount')),
 			'status' => \Context::get('status') === 'closed' ? 'closed' : 'open',
 			'list_order' => (int)\Context::get('list_order'),
 			'last_update' => self::now(),
@@ -1162,8 +1162,8 @@ class Admin extends Base
 	public function procReservationAdminGetBookings()
 	{
 		$resource_srl = (int)\Context::get('resource_srl');
-		$from = preg_replace('/\D/', '', (string)\Context::get('from')) ?: date('Ymd');
-		$to = preg_replace('/\D/', '', (string)\Context::get('to')) ?: date('Ymd', strtotime('+30 day'));
+		$from = preg_replace('/\D/', '', (string)\Context::get('from')) ?: self::localDay();
+		$to = preg_replace('/\D/', '', (string)\Context::get('to')) ?: self::localDay(30);
 
 		$slots = [];
 		foreach (Slot::getRange($resource_srl, $from, $to) as $slot)
@@ -1358,15 +1358,44 @@ class Admin extends Base
 		$from = preg_replace('/\D/', '', (string)\Context::get('period_from'));
 		$to = preg_replace('/\D/', '', (string)\Context::get('period_to'));
 
-		if ($staff_srl <= 0 || strlen($from) !== 8 || strlen($to) !== 8 || $from > $to)
+		$error = '';
+		if ($staff_srl <= 0 || !StaffModel::get($staff_srl))
 		{
-			return new \BaseObject(-1, 'msg_invalid_request');
+			$error = 'need_staff';
+		}
+		elseif (strlen($from) !== 8 || strlen($to) !== 8 || !checkdate((int)substr($from, 4, 2), (int)substr($from, 6, 2), (int)substr($from, 0, 4))
+			|| !checkdate((int)substr($to, 4, 2), (int)substr($to, 6, 2), (int)substr($to, 0, 4)))
+		{
+			$error = 'need_period';
+		}
+		elseif ($from > $to)
+		{
+			$error = 'period_order';
+		}
+		elseif (!count(SettlementModel::getTargets(self::instanceSrl(), $staff_srl, $from, $to)))
+		{
+			$error = 'empty';
 		}
 
-		$settlement_srl = SettlementModel::build(self::instanceSrl(), $staff_srl, $from, $to);
-		if ($settlement_srl <= 0)
+		$settlement_srl = 0;
+		if ($error === '')
 		{
-			return new \BaseObject(-1, 'msg_reservation_settlement_empty');
+			$settlement_srl = SettlementModel::build(self::instanceSrl(), $staff_srl, $from, $to);
+			if ($settlement_srl <= 0)
+			{
+				$error = 'save_failed';
+			}
+		}
+
+		if ($error !== '')
+		{
+			if (in_array(\Context::getRequestMethod(), ['JSON', 'XMLRPC'], true))
+			{
+				return new \BaseObject(-1, 'msg_rsv_settlement_err_' . $error);
+			}
+			$this->setRedirectUrl(getNotEncodedUrl('', 'module', 'admin', 'act', 'dispReservationAdminSettlements',
+				'se_error', $error, 'se_staff', $staff_srl ?: '', 'se_from', $from, 'se_to', $to));
+			return;
 		}
 
 		$this->setMessage('success_registed');

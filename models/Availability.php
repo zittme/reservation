@@ -385,17 +385,17 @@ class Availability
 		$lead = max(0, (int)($resource->min_lead_minutes ?? 0));
 		$threshold = time() + $lead * 60;
 
-		if ($date > date('Ymd', $threshold))
+		if ($date > Base::localDate('Ymd', $threshold))
 		{
 			return null;
 		}
-		if ($date < date('Ymd', $threshold))
+		if ($date < Base::localDate('Ymd', $threshold))
 		{
 			// 이미 지난 날이다. 어떤 시각도 담지 못하게 한다
 			return 24 * 60;
 		}
 
-		return (int)date('G', $threshold) * 60 + (int)date('i', $threshold);
+		return (int)Base::localDate('G', $threshold) * 60 + (int)Base::localDate('i', $threshold);
 	}
 
 	/**
@@ -413,7 +413,7 @@ class Availability
 			return null;
 		}
 
-		$limit = date('Ymd', strtotime('+' . $days . ' days'));
+		$limit = Base::localDay($days);
 		return $date > $limit ? -1 : null;
 	}
 

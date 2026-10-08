@@ -61,7 +61,7 @@ foreach ($coupons as $rsvm_c)
 			<input type="hidden" name="act" value="procReservationAdminInsertGrade" />
 			<div class="rsva-inline">
 				<div><label>{{ $lang->rsv_adm_grade_name }} *</label><input type="text" name="title" placeholder="{{ $lang->rsv_adm_ph_grade }}" required /></div>
-				<div><label>{{ $lang->rsv_adm_min_spend }}</label><input type="number" name="min_spend" value="0" min="0" step="1000" /></div>
+				<div><label>{{ $lang->rsv_adm_min_spend }}</label><input type="number" name="min_spend" value="0" min="0" step="1" /></div>
 				<div><label>{{ $lang->rsv_adm_earn_rate }} %</label><input type="number" name="credit_rate" value="0" min="0" step="0.1" style="width:90px" /></div>
 				<div><label>{{ $lang->rsv_adm_service_discount }}</label><select name="discount_type"><option value="">{{ $lang->rsv_adm_none }}</option><option value="percent">{{ $lang->rsv_adm_percent }}</option><option value="amount">{{ $lang->rsv_adm_fixed }}</option></select></div>
 				<div><label>{{ $lang->rsv_adm_discount_value }}</label><input type="number" name="discount_value" value="0" min="0" style="width:90px" /></div>
@@ -163,7 +163,7 @@ foreach ($coupons as $rsvm_c)
 				<input type="hidden" name="act" value="procReservationAdminAdjustCredit" />
 				<div class="rsva-field"><label>{{ $lang->rsv_adm_adjust_credit }}</label><input type="text" name="member_id" required /></div>
 				<div class="rsva-inline">
-					<div><label>{{ $lang->rsv_adm_amount_signed }}</label><input type="number" name="amount" value="0" step="1000" required /></div>
+					<div><label>{{ $lang->rsv_adm_amount_signed }}</label><input type="number" name="amount" value="0" step="1" required /></div>
 					<div style="flex:1"><label>{{ $lang->rsv_adm_memo }}</label><input type="text" name="memo" placeholder="{{ $lang->rsv_adm_ph_memo }}" /></div>
 					<div><button type="submit" class="rsva-btn rsva-btn-primary">{{ $lang->rsv_adm_apply }}</button></div>
 				</div>

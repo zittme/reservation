@@ -1,0 +1,8 @@
+@version(2)
+@if (!empty($rsv_manage_links))
+<nav class="rsv-manage" aria-label="{{ $lang->rsv_manage_title }}">
+	<span class="rsv-manage-label">{{ $lang->rsv_manage_title }}</span>
+	<a class="rsv-manage-btn" href="{{ $rsv_manage_links['console'] }}">{{ $lang->rsv_manage_console }}</a>
+	<a class="rsv-manage-btn" href="{{ $rsv_manage_links['admin'] }}">{{ $lang->rsv_manage_admin }}</a>
+</nav>
+@endif

@@ -140,7 +140,7 @@ class Slot
 		{
 			$output = executeQuery('reservation.getSlotCoverage', (object)['resource_srl' => $resource_srl]);
 			$max_date = ($output->toBool() && is_object($output->data)) ? (string)($output->data->max_date ?? '') : '';
-			$target = date('Ymd', strtotime('+' . max(0, $days - 7) . ' day'));
+			$target = Base::localDay(max(0, $days - 7));
 			if ($max_date !== '' && $max_date >= $target)
 			{
 				return 0;
@@ -150,10 +150,10 @@ class Slot
 		// 이미 있는 슬롯 키를 한 번에 읽는다 — 존재하는 날짜·시간은 INSERT 자체를 건너뛴다.
 		// (충돌하는 INSERT 를 수천 번 던지면 저장·달력이 수 초씩 느려진다)
 		$existing = [];
-		$range_end = date('Ymd', strtotime('+' . $days . ' day'));
+		$range_end = Base::localDay($days);
 		$output = executeQuery('reservation.getSlotList', (object)[
 			'resource_srl' => $resource_srl,
-			'from_date' => date('Ymd'),
+			'from_date' => Base::localDay(),
 			'to_date' => $range_end,
 		]);
 		if ($output->toBool() && !empty($output->data))

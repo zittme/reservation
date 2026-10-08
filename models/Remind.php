@@ -37,8 +37,8 @@ class Remind
 		$hours = max(1, min(168, (int)($config->remind_hours ?? 24)));
 		$output = executeQuery('reservation.getRemindDue', (object)[
 			'status' => Base::STATUS_CONFIRMED,
-			'from_datetime' => date('YmdHis'),
-			'to_datetime' => date('YmdHis', time() + 3600 * $hours),
+			'from_datetime' => Base::localDate('YmdHis'),
+			'to_datetime' => Base::localDate('YmdHis', time() + 3600 * $hours),
 			'list_count' => 30,
 		]);
 		if (!$output->toBool() || empty($output->data))
