@@ -97,6 +97,52 @@ class Notify
 	}
 
 	/**
+	 * 배정된 담당자 본인에게 새 예약을 알린다. 설정의 notify_staff 가 켜져 있을 때만 보낸다.
+	 *
+	 * 주소는 담당자에 연결한 회원 계정의 이메일이다. 연결이 없거나 이메일이 비어 있으면 건너뛴다.
+	 *
+	 * @param object $booking
+	 * @return void
+	 */
+	public static function sendToStaff(object $booking): void
+	{
+		try
+		{
+			if ((string)(Config::getConfig()->notify_staff ?? 'N') !== 'Y')
+			{
+				return;
+			}
+
+			$staff = Staff::get((int)($booking->staff_srl ?? 0));
+			if (!$staff || (int)$staff->member_srl <= 0)
+			{
+				return;
+			}
+
+			$member = \MemberModel::getMemberInfoByMemberSrl((int)$staff->member_srl);
+			$to = trim((string)($member->email_address ?? ''));
+			if ($to === '' || !filter_var($to, FILTER_VALIDATE_EMAIL))
+			{
+				self::log($booking, self::CHANNEL_MAIL, self::TPL_STAFF_NEW, '', 'skipped', 'no staff email');
+				return;
+			}
+
+			$context = self::buildContext($booking, []);
+			$mail = new \Rhymix\Framework\Mail();
+			$mail->addTo($to);
+			$mail->setSubject(self::renderSubject(self::TPL_STAFF_NEW, $context));
+			$mail->setBody(nl2br(escape(self::renderBody(self::TPL_STAFF_NEW, $context))));
+			$sent = $mail->send();
+
+			self::log($booking, self::CHANNEL_MAIL, self::TPL_STAFF_NEW, $to, $sent ? 'sent' : 'failed', $sent ? '' : 'send returned false');
+		}
+		catch (\Throwable $e)
+		{
+			self::log($booking, self::CHANNEL_MAIL, self::TPL_STAFF_NEW, '', 'failed', $e->getMessage());
+		}
+	}
+
+	/**
 	 * 이 알림을 보내기로 설정되어 있는가.
 	 *
 	 * @param object $config
@@ -140,6 +186,7 @@ class Notify
 			'when' => trim($when),
 			'service' => '',
 			'staff' => '',
+			'branch' => '',
 			'site' => (string)(\Context::get('site_title') ?: ''),
 		];
 
@@ -157,6 +204,21 @@ class Notify
 		if ($staff)
 		{
 			$context['staff'] = Lang::text($staff->name);
+		}
+
+		$branch_srl = (int)($booking->branch_srl ?? 0);
+		if ($branch_srl <= 0 && $staff)
+		{
+			$branch_srl = (int)$staff->branch_srl;
+		}
+		if ($branch_srl <= 0)
+		{
+			$branch_srl = BranchLink::getSoleBranchSrl();
+		}
+		$branch = BranchLink::get($branch_srl);
+		if ($branch)
+		{
+			$context['branch'] = Lang::text($branch->name);
 		}
 
 		return array_merge($context, $extra);
@@ -207,6 +269,10 @@ class Notify
 	 */
 	protected static function fill(string $text, array $context): string
 	{
+		if (isset($context['branch']) && $context['branch'] === '')
+		{
+			$text = preg_replace('/\s*[,、，]\s*\{branch\}/u', '', $text);
+		}
 		foreach ($context as $key => $value)
 		{
 			$text = str_replace('{' . $key . '}', (string)$value, $text);

@@ -165,6 +165,8 @@ $lang->notify_subject_cancelled = '[{site}] Reserva de {service} cancelada';
 $lang->notify_body_cancelled = '{name}, tu reserva de {service} para el {when} fue cancelada. Referencia {code}';
 $lang->notify_subject_remind = '[{site}] Próxima reserva de {service} el {when}';
 $lang->notify_body_remind = '{name}, te recordamos tu reserva de {service} para el {when}. Te atiende {staff}. Referencia {code}';
+$lang->notify_subject_staff_new = '[{site}] Nueva reserva: {when} {service}';
+$lang->notify_body_staff_new = 'Se le ha asignado una nueva reserva. {when} {service}, {branch}. Cliente {name}. Referencia {code}';
 
 // Messages
 $lang->msg_reservation_no_staff = 'No se encontró a esa persona.';
@@ -439,6 +441,8 @@ $lang->rsv_adm_time_needed = 'Duración (min)';
 $lang->rsv_adm_share_pct = 'Comisión (%)';
 $lang->rsv_adm_service_default = 'Predeterminado %1$s KRW / %2$s min';
 $lang->about_rsv_remind_hours = 'Se envía una vez por reserva confirmada. Se revisa cada 5 minutos si la cola de tareas del núcleo está activa; de lo contrario, cuando se abren las páginas de reservas.';
+$lang->rsv_notify_staff = 'Avisar al profesional asignado';
+$lang->about_rsv_notify_staff = 'Cuando se confirma una reserva, envía un correo al profesional asignado (al correo de la cuenta de miembro vinculada). Desactivado por defecto.';
 $lang->rsv_adm_lang_need_value = 'Escribe el valor de al menos un idioma.';
 $lang->rsv_adm_lang_save_failed = 'No se pudo guardar.';
 $lang->rsv_adm_lang_link = 'Vincular un texto traducido';

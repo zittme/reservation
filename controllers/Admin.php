@@ -33,7 +33,7 @@ class Admin extends Base
 		'notify_admin', 'notify_admin_email', 'refund_policy',
 		'credit_enabled', 'credit_rate', 'credit_min_use', 'credit_max_use_rate', 'coupon_enabled',
 		'notify_mail', 'notify_sms', 'notify_on_booked', 'notify_on_confirmed', 'notify_on_cancelled',
-		'notify_remind', 'remind_hours', 'sms_from', 'slot_unit', 'allow_any_staff',
+		'notify_remind', 'remind_hours', 'sms_from', 'slot_unit', 'allow_any_staff', 'notify_staff',
 	];
 
 	/**
@@ -44,7 +44,7 @@ class Admin extends Base
 	protected const BOOLEAN_FIELDS = [
 		'enabled', 'allow_guest', 'notify_admin', 'credit_enabled', 'coupon_enabled',
 		'notify_mail', 'notify_sms', 'notify_on_booked', 'notify_on_confirmed', 'notify_on_cancelled',
-		'notify_remind', 'allow_any_staff',
+		'notify_remind', 'allow_any_staff', 'notify_staff',
 	];
 	protected const INT_FIELDS = [
 		'remind_hours' => [1, 168],

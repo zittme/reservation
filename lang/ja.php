@@ -165,6 +165,8 @@ $lang->notify_subject_cancelled = '[{site}] {service}のご予約がキャンセ
 $lang->notify_body_cancelled = '{name}様、{when}の{service}のご予約がキャンセルされました。予約番号 {code}';
 $lang->notify_subject_remind = '[{site}] {when} {service}のご予約のお知らせ';
 $lang->notify_body_remind = '{name}様、{when}の{service}のご予約についてお知らせします。担当: {staff}。予約番号 {code}';
+$lang->notify_subject_staff_new = '[{site}] 新しい予約: {when} {service}';
+$lang->notify_body_staff_new = '新しい予約が割り当てられました。{when} {service}、{branch}。お客様 {name}。予約番号 {code}';
 
 // Messages
 $lang->msg_reservation_no_staff = 'スタッフが見つかりません。';
@@ -439,6 +441,8 @@ $lang->rsv_adm_time_needed = '所要時間(分)';
 $lang->rsv_adm_share_pct = '配分率(%)';
 $lang->rsv_adm_service_default = '基本 %1$sウォン / %2$s分';
 $lang->about_rsv_remind_hours = '確定した予約ごとに1回送信します。コアのタスクキューが有効な場合は5分ごとに、それ以外は予約ページが開かれたときに確認します。';
+$lang->rsv_notify_staff = '担当者に新規予約を通知';
+$lang->about_rsv_notify_staff = '予約が確定したら、割り当てられた担当者本人(担当者に連携した会員アカウントのメール)にメールで通知します。初期設定はオフです。';
 $lang->rsv_adm_lang_need_value = '言語別の値を1つ以上入力してください。';
 $lang->rsv_adm_lang_save_failed = '保存できませんでした。';
 $lang->rsv_adm_lang_link = '多言語の文言を紐づけ';

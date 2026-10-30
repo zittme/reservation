@@ -199,7 +199,7 @@ class Slot
 		}
 
 		$created = 0;
-		$today = new \DateTime('today');
+		$today = \DateTime::createFromFormat('!Ymd', Base::localDay(), new \DateTimeZone('UTC'));
 		for ($i = 0; $i < $days; $i++)
 		{
 			$date = (clone $today)->modify("+{$i} day");

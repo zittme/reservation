@@ -9,6 +9,7 @@
 		<column name="resource_srl" var="resource_srl" notnull="notnull" />
 		<column name="slot_srl" var="slot_srl" notnull="notnull" />
 		<column name="staff_srl" var="staff_srl" default="0" />
+		<column name="branch_srl" var="branch_srl" default="0" />
 		<column name="service_date" var="service_date" />
 		<column name="start_datetime" var="start_datetime" />
 		<column name="end_datetime" var="end_datetime" />

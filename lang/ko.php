@@ -165,6 +165,8 @@ $lang->notify_subject_cancelled = '[{site}] {service} 예약이 취소되었습�
 $lang->notify_body_cancelled = '{name} 님, {when} {service} 예약이 취소되었습니다. 예약번호 {code}';
 $lang->notify_subject_remind = '[{site}] {when} {service} 예약 안내';
 $lang->notify_body_remind = '{name} 님, {when} {service} 예약을 잊지 마세요. 담당 {staff}. 예약번호 {code}';
+$lang->notify_subject_staff_new = '[{site}] 새 예약: {when} {service}';
+$lang->notify_body_staff_new = '새 예약이 배정되었습니다. {when} {service}, {branch}. 고객 {name}. 예약번호 {code}';
 
 // 알림 문구 안내
 $lang->msg_reservation_no_staff = '담당자를 찾을 수 없습니다.';
@@ -439,6 +441,8 @@ $lang->rsv_adm_time_needed = '소요시간(분)';
 $lang->rsv_adm_share_pct = '배분율(%)';
 $lang->rsv_adm_service_default = '기본 %1$s원 / %2$s분';
 $lang->about_rsv_remind_hours = '확정된 예약에 한 번 보냅니다. 코어 예약 작업(큐)이 켜져 있으면 5분마다, 아니면 예약 화면이 열릴 때 확인합니다.';
+$lang->rsv_notify_staff = '담당자에게 새 예약 알림';
+$lang->about_rsv_notify_staff = '예약이 확정되면 배정된 담당자 본인(담당자에 연결한 회원 계정의 이메일)에게 메일로 알립니다. 기본은 꺼짐입니다.';
 $lang->rsv_adm_lang_need_value = '언어별 값을 하나 이상 입력해 주세요.';
 $lang->rsv_adm_lang_save_failed = '저장하지 못했습니다.';
 $lang->rsv_adm_lang_link = '다국어 문구 연결';

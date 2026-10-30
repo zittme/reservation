@@ -38,6 +38,8 @@ class Install extends Base
 		['reservation_booking', 'credit_used', 'bigint', 0, 0],
 		['reservation_booking', 'credit_earned', 'bigint', 0, 0],
 		['reservation_booking', 'remind_sent', 'char', 14, null],
+		['reservation_booking', 'branch_srl', 'bigint', 0, 0],
+		['reservation_staff', 'last_assigned', 'char', 14, null],
 	];
 
 	/**

@@ -206,6 +206,49 @@ class Base extends \ModuleObject
 	}
 
 	/**
+	 * 영업 시간대의 날짜(YYYYMMDD)에서 며칠 더한 날짜. 서머타임과 무관하게 달력 날짜로만 계산한다.
+	 *
+	 * @param string $ymd
+	 * @param int $days
+	 * @return string
+	 */
+	public static function addDays(string $ymd, int $days): string
+	{
+		$datetime = \DateTime::createFromFormat('!Ymd', $ymd, new \DateTimeZone('UTC'));
+		if (!$datetime)
+		{
+			return $ymd;
+		}
+		$datetime->modify(sprintf('%+d day', $days));
+		return $datetime->format('Ymd');
+	}
+
+	/**
+	 * 코어가 저장한 시각(접수·확정 시각 등 내부 시간대)을 영업 시간대로 바꿔 적는다.
+	 *
+	 * 예약 시각과 달리 접수 시각은 내부 시간대로 저장된다. 화면에서는 이 함수로 거쳐야 둘이 같은 시간대로 보인다.
+	 *
+	 * @param string $datetime YYYYMMDD[HHII[SS]]
+	 * @param string $format date() 형식
+	 * @return string
+	 */
+	public static function siteDate(string $datetime, string $format = 'Y-m-d H:i'): string
+	{
+		$digits = preg_replace('/\D/', '', $datetime);
+		if (strlen($digits) < 8)
+		{
+			return '';
+		}
+		$digits = str_pad(substr($digits, 0, 14), 14, '0');
+		$parsed = \DateTime::createFromFormat('YmdHis', $digits, new \DateTimeZone(date_default_timezone_get()));
+		if (!$parsed)
+		{
+			return '';
+		}
+		return $parsed->setTimezone(self::siteTimezone())->format($format);
+	}
+
+	/**
 	 * 예약번호 생성. 예: R20260730-4F7A2C
 	 *
 	 * @return string
@@ -213,7 +256,7 @@ class Base extends \ModuleObject
 	public static function generateBookingCode(): string
 	{
 		$prefix = trim((string)(self::config()->code_prefix ?? 'R'));
-		return sprintf('%s%s-%s', $prefix !== '' ? $prefix : 'R', date('Ymd'), strtoupper(substr(bin2hex(random_bytes(4)), 0, 6)));
+		return sprintf('%s%s-%s', $prefix !== '' ? $prefix : 'R', self::localDate('Ymd'), strtoupper(substr(bin2hex(random_bytes(4)), 0, 6)));
 	}
 
 	/**

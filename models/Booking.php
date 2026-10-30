@@ -58,6 +58,7 @@ class Booking
 			'resource_srl' => (int)($args->resource_srl ?? 0),
 			'slot_srl' => $slot_srl,
 			'staff_srl' => $staff_srl,
+			'branch_srl' => (int)($args->branch_srl ?? 0),
 			'service_date' => (string)($args->service_date ?? ''),
 			'start_datetime' => $start_datetime,
 			'end_datetime' => (string)($args->end_datetime ?? ''),
@@ -161,6 +162,7 @@ class Booking
 			if ($booking)
 			{
 				Notify::send($booking, Notify::TPL_CONFIRMED);
+				Notify::sendToStaff($booking);
 			}
 		}
 		return $won;

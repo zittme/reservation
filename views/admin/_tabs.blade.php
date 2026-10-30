@@ -87,7 +87,7 @@ body { -webkit-font-smoothing: antialiased; color: var(--zmc-ink); }
 .rsva .rsva-filter { padding: 14px 16px; background: #fff; border: 1px solid var(--zmc-line); border-radius: 14px; margin-bottom: 16px; }
 .rsva .rsva-card { border-radius: 16px; box-shadow: 0 1px 2px rgba(25,31,40,.03); }
 .rsva small { color: var(--zmc-sub); }
-@media (max-width: 900px) { .zmc-side { width: 62px; padding: 18px 9px; } .zmc-logo { padding: 0 6px 16px; } .zmc-logo span, .zmc-nav a span, .zmc-side-foot { display: none; } .zmc-top { margin-left: 62px; padding: 14px 16px; } .rsva { margin-left: 62px; padding: 18px 16px 70px; } }
+@media (max-width: 900px) { .zmc-side { position: static; width: auto; flex-direction: row; align-items: center; gap: 4px; padding: 10px 12px; border-right: 0; border-bottom: 1px solid var(--zmc-line); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; } .zmc-logo { display: none; } .zmc-nav { flex: 0 0 auto; display: flex; gap: 4px; } .zmc-nav a { margin-bottom: 0; padding: 8px 13px; white-space: nowrap; font-size: 14px; } .zmc-nav a.is-active::before { display: none; } .zmc-side-foot { flex: 0 0 auto; display: flex; gap: 2px; padding-top: 0; border-top: 0; margin-left: 6px; padding-left: 8px; border-left: 1px solid var(--zmc-line); } .zmc-side-foot a { white-space: nowrap; padding: 8px 10px; } .zmc-top { margin-left: 0; padding: 14px 16px; position: static; } .rsva { margin-left: 0; padding: 18px 16px 70px; } }
 </style>
 @php
 $zmc_menu = [

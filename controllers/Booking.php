@@ -43,7 +43,7 @@ class Booking extends Base
 		{
 			return new \BaseObject(-1, 'msg_invalid_request');
 		}
-		$max_to = date('Ymd', strtotime($from . ' +62 day'));
+		$max_to = self::addDays($from, 62);
 		if ($to > $max_to)
 		{
 			$to = $max_to;
@@ -189,7 +189,7 @@ class Booking extends Base
 		}
 
 		// 조회 범위를 막아 둔다. 한 번에 몇 달을 계산하면 화면이 멈춘다
-		$max_to = date('Ymd', strtotime($from . ' +62 day'));
+		$max_to = self::addDays($from, 62);
 		if ($to > $max_to)
 		{
 			$to = $max_to;
@@ -346,6 +346,7 @@ class Booking extends Base
 		$output = BookingModel::create((object)[
 			'slot_srl' => $slot_srl,
 			'staff_srl' => (int)$plan['staff_srl'],
+			'branch_srl' => (int)$plan['branch_srl'],
 			'service_date' => (string)$plan['service_date'],
 			'start_datetime' => (string)$plan['start_datetime'],
 			'end_datetime' => (string)$plan['end_datetime'],
@@ -398,8 +399,17 @@ class Booking extends Base
 			'regdate' => self::now(),
 		]);
 
+		if (!empty($plan['auto_assigned']))
+		{
+			StaffModel::markAssigned((int)$plan['staff_srl']);
+		}
+
 		// 접수 알림. 결제로 넘어가는 예약은 확정될 때 다시 한 번 나간다
 		Notify::send($booking, Notify::TPL_BOOKED);
+		if (!$paid)
+		{
+			Notify::sendToStaff($booking);
+		}
 
 		// mid 가 없으면 복귀 주소에도 mid 가 빠져 결과 화면에 레이아웃이 붙지 않는다.
 		// 스킨이 mid 를 안 보내는 경우까지 여기서 막는다.
@@ -645,6 +655,8 @@ class Booking extends Base
 				'slot' => $slot,
 				'slot_srl' => $slot_srl,
 				'staff_srl' => 0,
+				'branch_srl' => self::resolveBranchSrl(),
+				'auto_assigned' => false,
 				'service_date' => (string)$slot->slot_date,
 				'start_datetime' => self::slotDatetime((string)$slot->slot_date, (string)$slot->start_time),
 				'end_datetime' => self::slotDatetime((string)$slot->slot_date, (string)$slot->end_time),
@@ -680,6 +692,12 @@ class Booking extends Base
 			return $staff;
 		}
 
+		$branch_srl = self::resolveBranchSrl();
+		if ($branch_srl <= 0)
+		{
+			$branch_srl = (int)$staff->branch_srl;
+		}
+
 		$map = StaffModel::getServiceMap((int)$staff->staff_srl);
 		$resolved = StaffModel::resolveService($resource, $staff, $map[$resource_srl] ?? null);
 		$duration = (int)$resolved['duration'];
@@ -691,7 +709,7 @@ class Booking extends Base
 			return new \BaseObject(-1, 'msg_reservation_slot_full');
 		}
 
-		$start_ts = strtotime(substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2) . ' ' . $time . ':00');
+		$start_ts = self::localTimestamp($date . str_replace(':', '', $time) . '00');
 		if ($start_ts === false)
 		{
 			return new \BaseObject(-1, 'msg_invalid_request');
@@ -706,9 +724,11 @@ class Booking extends Base
 			'slot' => null,
 			'slot_srl' => 0,
 			'staff_srl' => (int)$staff->staff_srl,
+			'branch_srl' => $branch_srl,
+			'auto_assigned' => (int)\Context::get('staff_srl') <= 0,
 			'service_date' => $date,
-			'start_datetime' => date('YmdHis', $start_ts),
-			'end_datetime' => date('YmdHis', $start_ts + $duration * 60),
+			'start_datetime' => self::localDate('YmdHis', $start_ts),
+			'end_datetime' => self::localDate('YmdHis', $start_ts + $duration * 60),
 			'duration' => $duration,
 			'occupy_minutes' => $before + $duration + $after,
 			'price' => (int)$resolved['price'],
@@ -761,7 +781,7 @@ class Booking extends Base
 			return new \BaseObject(-1, 'msg_reservation_need_staff');
 		}
 
-		// 그 시각에 비어 있는 사람 중 예약이 가장 적은 쪽으로 돌린다
+		// 그 시각에 비어 있는 사람 중 그날 예약이 가장 적은 쪽으로 돌리고, 같으면 마지막 배정이 가장 오래된 사람이 맡는다
 		$candidates = StaffModel::getListForService($module_srl, $resource_srl, self::resolveBranchSrl());
 		$available = [];
 		foreach ($candidates as $candidate)
@@ -773,6 +793,7 @@ class Booking extends Base
 				$available[] = [
 					'staff' => $candidate,
 					'load' => count(Availability::getBusyRanges((int)$candidate->staff_srl, $date)),
+					'last' => (string)($candidate->last_assigned ?? ''),
 				];
 			}
 		}
@@ -783,7 +804,7 @@ class Booking extends Base
 		}
 
 		usort($available, function ($a, $b) {
-			return $a['load'] <=> $b['load'];
+			return [$a['load'], $a['last']] <=> [$b['load'], $b['last']];
 		});
 
 		return $available[0]['staff'];

@@ -280,6 +280,20 @@ class Staff
 	}
 
 	/**
+	 * 담당자를 고르지 않은 예약에 배정된 시각을 남긴다. 동률일 때 가장 오래 쉰 사람부터 돌리는 기준이다.
+	 *
+	 * @param int $staff_srl
+	 * @return void
+	 */
+	public static function markAssigned(int $staff_srl): void
+	{
+		if ($staff_srl > 0)
+		{
+			executeQuery('reservation.updateStaffAssigned', (object)['staff_srl' => $staff_srl, 'last_assigned' => Base::now()]);
+		}
+	}
+
+	/**
 	 * 담당자가 맡을 시술 연결을 통째로 다시 쓴다.
 	 *
 	 * 화면에서 체크한 것만 남기는 방식이라 지우고 다시 넣는다.

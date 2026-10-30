@@ -25,7 +25,7 @@
 			<li>
 				<span class="rsv-my-code">{{ $lang->{'reservation_credit_' . $log->type} ?? $log->type }}</span>
 				<span class="rsv-my-status">{{ (int)$log->amount > 0 ? '+' : '' }}{{ number_format((int)$log->amount) }}</span>
-				<span class="rsv-my-date">{{ zdate($log->regdate, $lang->reservation_date_format) }}</span>
+				<span class="rsv-my-date">{{ \Zittme\Modules\Reservation\Controllers\Base::siteDate((string)$log->regdate, $lang->reservation_date_format) }}</span>
 			</li>
 			@endforeach
 		</ul>
@@ -41,7 +41,7 @@
 				<a href="{{ getUrl('', 'mid', $mid, 'act', 'dispReservationResult', 'code', $b->booking_code) }}">
 					<span class="rsv-my-code">{{ $b->booking_code }}</span>
 					<span class="rsv-my-status rsv-st-{{ $b->status }}">{{ $lang->{'reservation_status_' . $b->status} ?? $b->status }}</span>
-					<span class="rsv-my-date">{{ zdate($b->regdate, $lang->reservation_date_format) }}</span>
+					<span class="rsv-my-date">{{ \Zittme\Modules\Reservation\Controllers\Base::siteDate((string)$b->regdate, $lang->reservation_date_format) }}</span>
 				</a>
 			</li>
 			@endforeach

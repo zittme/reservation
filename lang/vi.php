@@ -165,6 +165,8 @@ $lang->notify_subject_cancelled = '[{site}] Đã hủy lịch hẹn {service}';
 $lang->notify_body_cancelled = '{name} ơi, lịch hẹn {service} vào {when} đã bị hủy. Mã {code}';
 $lang->notify_subject_remind = '[{site}] Sắp đến lịch hẹn {service} vào {when}';
 $lang->notify_body_remind = '{name} ơi, nhắc bạn lịch hẹn {service} vào {when}. Nhân viên: {staff}. Mã {code}';
+$lang->notify_subject_staff_new = '[{site}] Lịch hẹn mới: {when} {service}';
+$lang->notify_body_staff_new = 'Bạn vừa được phân công một lịch hẹn mới. {when} {service}, {branch}. Khách {name}. Mã đặt chỗ {code}';
 
 // Messages
 $lang->msg_reservation_no_staff = 'Không tìm thấy nhân viên này.';
@@ -439,6 +441,8 @@ $lang->rsv_adm_time_needed = 'Thời lượng (phút)';
 $lang->rsv_adm_share_pct = 'Tỷ lệ chia (%)';
 $lang->rsv_adm_service_default = 'Mặc định %1$s KRW / %2$s phút';
 $lang->about_rsv_remind_hours = 'Gửi một lần cho mỗi lịch hẹn đã xác nhận. Kiểm tra mỗi 5 phút khi hàng đợi tác vụ của hệ thống được bật, nếu không thì kiểm tra khi có người mở trang đặt lịch.';
+$lang->rsv_notify_staff = 'Báo cho nhân viên được phân công';
+$lang->about_rsv_notify_staff = 'Khi lịch hẹn được xác nhận, gửi email cho nhân viên được phân công (email của tài khoản thành viên đã liên kết). Mặc định tắt.';
 $lang->rsv_adm_lang_need_value = 'Vui lòng nhập giá trị cho ít nhất một ngôn ngữ.';
 $lang->rsv_adm_lang_save_failed = 'Không lưu được.';
 $lang->rsv_adm_lang_link = 'Liên kết cụm từ đa ngôn ngữ';

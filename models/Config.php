@@ -53,6 +53,8 @@ class Config
 		'notify_on_confirmed' => 'Y',
 		'notify_on_cancelled' => 'Y',
 		'notify_remind' => 'Y',
+		// 배정된 담당자 본인(회원 이메일)에게 새 예약을 알린다
+		'notify_staff' => 'N',
 		// 방문 몇 시간 전에 알릴 것인가
 		'remind_hours' => 24,
 		// 문자 발신번호. 코어 SMS 설정의 기본 발신번호를 쓰려면 비워 둔다

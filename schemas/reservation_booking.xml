@@ -8,6 +8,8 @@
 	<column name="slot_srl" type="bigint" notnull="notnull" />
 	<!-- 담당자 모드의 배정 담당자. 0 = 슬롯 모드이거나 미배정 -->
 	<column name="staff_srl" type="bigint" notnull="notnull" default="0" index="idx_staff_srl" />
+	<!-- 예약 시점에 확정된 지점. 0 이면 기록 없음(지점을 쓰지 않거나 옛 예약) -->
+	<column name="branch_srl" type="bigint" notnull="notnull" default="0" />
 	<!--
 	  YYYYMMDD. 이용일. 두 방식 모두에서 채운다.
 	  슬롯 모드는 슬롯 날짜를, 담당자 모드는 시작 시각의 날짜를 적는다.

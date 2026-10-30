@@ -2,6 +2,8 @@
 
 namespace Zittme\Modules\Reservation\Models;
 
+use Zittme\Modules\Reservation\Controllers\Base;
+
 /**
  * 담당자 모드의 점유 — 예약의 단일 진실 공급원.
  *
@@ -38,7 +40,7 @@ class Occupancy
 
 		$oDB = \Rhymix\Framework\DB::getInstance();
 		$prefix = \Rhymix\Framework\Config::get('db.master.prefix') ?: '';
-		$now = date('YmdHis');
+		$now = Base::now();
 
 		$values = [];
 		$params = [];
@@ -142,17 +144,17 @@ class Occupancy
 		$config = Config::getConfig();
 		$unit = max(5, (int)($config->slot_unit ?? 10));
 
-		$start = strtotime(
-			substr($start_datetime, 0, 4) . '-' . substr($start_datetime, 4, 2) . '-' . substr($start_datetime, 6, 2) . ' ' .
-			substr($start_datetime, 8, 2) . ':' . substr($start_datetime, 10, 2) . ':' . substr($start_datetime, 12, 2)
-		);
-		if ($start === false)
+		$utc = new \DateTimeZone('UTC');
+		$parsed = \DateTime::createFromFormat('!YmdHis', $start_datetime, $utc);
+		if (!$parsed)
 		{
 			return [];
 		}
 
+		// 벽시계 시각을 UTC 로 읽어 서버·사이트 시간대와 서머타임에 흔들리지 않게 한다.
 		// 칸 경계로 내림한 시각부터 시작한다
-		$day_start = strtotime(date('Y-m-d 00:00:00', $start));
+		$start = $parsed->getTimestamp();
+		$day_start = (clone $parsed)->setTime(0, 0, 0)->getTimestamp();
 		$offset = (int)floor(($start - $day_start) / 60);
 		$first = (int)floor($offset / $unit) * $unit;
 		$last = (int)ceil(($offset + $minutes) / $unit) * $unit;
@@ -160,7 +162,7 @@ class Occupancy
 		$cells = [];
 		for ($cursor = $first; $cursor < $last; $cursor += $unit)
 		{
-			$cells[] = date('YmdHi', $day_start + $cursor * 60);
+			$cells[] = gmdate('YmdHi', $day_start + $cursor * 60);
 		}
 
 		return $cells;

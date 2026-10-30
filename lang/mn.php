@@ -165,6 +165,8 @@ $lang->notify_subject_cancelled = '[{site}] {service} booking cancelled';
 $lang->notify_body_cancelled = '{name}, your {service} booking on {when} has been cancelled. Reference {code}';
 $lang->notify_subject_remind = '[{site}] Upcoming {service} booking on {when}';
 $lang->notify_body_remind = '{name}, a reminder about your {service} booking on {when}. With {staff}. Reference {code}';
+$lang->notify_subject_staff_new = '[{site}] New booking: {when} {service}';
+$lang->notify_body_staff_new = 'A new booking has been assigned to you. {when} {service}, {branch}. Customer {name}. Reference {code}';
 
 // Messages
 $lang->msg_reservation_no_staff = 'That person could not be found.';
@@ -439,6 +441,8 @@ $lang->rsv_adm_time_needed = 'Duration (min)';
 $lang->rsv_adm_share_pct = 'Share (%)';
 $lang->rsv_adm_service_default = 'Default %1$s KRW / %2$s min';
 $lang->about_rsv_remind_hours = 'Sent once per confirmed booking. Checked every 5 minutes when the core task queue is on, otherwise when booking pages are opened.';
+$lang->rsv_notify_staff = 'Notify assigned stylist';
+$lang->about_rsv_notify_staff = 'Emails the assigned staff member (the email of the linked member account) when a new booking is assigned. Off by default.';
 $lang->rsv_adm_lang_need_value = 'Дор хаяж нэг хэлний утгыг оруулна уу.';
 $lang->rsv_adm_lang_save_failed = 'Хадгалж чадсангүй.';
 $lang->rsv_adm_lang_link = 'Олон хэлний өгүүлбэр холбох';

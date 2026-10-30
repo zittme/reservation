@@ -165,6 +165,8 @@ $lang->notify_subject_cancelled = '[{site}] {service} 預約已取消';
 $lang->notify_body_cancelled = '{name} 您好，您於 {when} 的 {service} 預約已取消。預約編號 {code}';
 $lang->notify_subject_remind = '[{site}] {when} {service} 預約提醒';
 $lang->notify_body_remind = '{name} 您好，提醒您 {when} 有 {service} 預約。服務人員：{staff}。預約編號 {code}';
+$lang->notify_subject_staff_new = '[{site}] 新預約:{when} {service}';
+$lang->notify_body_staff_new = '您有一筆新預約。{when} {service}，{branch}。顧客 {name}。預約編號 {code}';
 
 // Messages
 $lang->msg_reservation_no_staff = '找不到該人員。';
@@ -439,6 +441,8 @@ $lang->rsv_adm_time_needed = '所需時間（分）';
 $lang->rsv_adm_share_pct = '分潤（%）';
 $lang->rsv_adm_service_default = '預設 %1$s 韓元／%2$s 分鐘';
 $lang->about_rsv_remind_hours = '每筆已確認的預約只發送一次。核心工作佇列開啟時每 5 分鐘檢查一次，否則於開啟預約頁面時檢查。';
+$lang->rsv_notify_staff = '通知被指派的設計師';
+$lang->about_rsv_notify_staff = '預約確認後，以電子郵件通知被指派的負責人本人(其連結會員帳號的電子郵件)。預設為關閉。';
 $lang->rsv_adm_lang_need_value = '請至少填寫一種語言的內容。';
 $lang->rsv_adm_lang_save_failed = '未能儲存。';
 $lang->rsv_adm_lang_link = '關聯多語言文字';
