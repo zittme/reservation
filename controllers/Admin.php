@@ -13,6 +13,7 @@ use Zittme\Modules\Reservation\Models\Remind;
 use Zittme\Modules\Reservation\Models\Settlement as SettlementModel;
 use Zittme\Modules\Reservation\Models\Slot;
 use Zittme\Modules\Reservation\Models\Staff as StaffModel;
+use Zittme\Modules\Reservation\Models\Stats as StatsModel;
 
 /**
  * 전용 운영 화면.
@@ -283,6 +284,7 @@ class Admin extends Base
 			'noshow_rate' => $confirmed + $noshow > 0 ? round($noshow / ($confirmed + $noshow) * 100, 1) : 0,
 			'cancel_rate' => $total > 0 ? round($cancelled / $total * 100, 1) : 0,
 		]);
+		\Context::set('stats_breakdown', StatsModel::breakdown(self::instanceSrl(), $from, $to));
 		$this->renderView('stats', 'stats');
 	}
 
@@ -470,6 +472,45 @@ class Admin extends Base
 			return null;
 		}
 		return \RX_BASEURL . 'files/attach/images/reservation/' . $resource_srl . '/' . $filename;
+	}
+
+	/**
+	 * 담당자 사진 업로드. 가로·세로 800px 를 넘는 JPG·PNG 는 비율을 지키며 줄여 저장한다.
+	 *
+	 * @return ?string 저장된 주소 (업로드가 없거나 이미지가 아니면 null)
+	 */
+	protected function saveStaffPhoto(): ?string
+	{
+		$file = $_FILES['thumb_file'] ?? null;
+		if (!$file || empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name']) || (int)$file['size'] > 10 * 1024 * 1024)
+		{
+			return null;
+		}
+
+		$info = @getimagesize($file['tmp_name']);
+		$ext_map = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_GIF => 'gif', IMAGETYPE_WEBP => 'webp'];
+		if (!$info || !isset($ext_map[$info[2]]))
+		{
+			return null;
+		}
+
+		$ext = $ext_map[$info[2]];
+		$dir = \RX_BASEDIR . 'files/attach/images/reservation/staff/';
+		\Rhymix\Framework\Storage::createDirectory($dir);
+		$filename = 'staff_' . date('YmdHis') . '_' . bin2hex(random_bytes(3)) . '.' . $ext;
+
+		if (in_array($ext, ['jpg', 'png'], true) && max((int)$info[0], (int)$info[1]) > 800)
+		{
+			if (!\FileHandler::createImageFile($file['tmp_name'], $dir . $filename, 800, 800, $ext, 'ratio', 88))
+			{
+				return null;
+			}
+		}
+		elseif (!@move_uploaded_file($file['tmp_name'], $dir . $filename))
+		{
+			return null;
+		}
+		return \RX_BASEURL . 'files/attach/images/reservation/staff/' . $filename;
 	}
 
 	/**
@@ -791,6 +832,26 @@ class Admin extends Base
 	}
 
 	/**
+	 * 확정 예약을 이용 완료로 바꾸고 방문 적립을 준다.
+	 *
+	 * 전이에 이긴 쪽만 적립한다. 두 번 눌러도 적립은 한 번이다.
+	 *
+	 * @param int $booking_srl
+	 * @param int $actor
+	 * @return bool
+	 */
+	protected static function completeBooking(int $booking_srl, int $actor): bool
+	{
+		if (!BookingModel::transition($booking_srl, [self::STATUS_CONFIRMED], self::STATUS_DONE))
+		{
+			return false;
+		}
+		BookingModel::log($booking_srl, 'done', self::STATUS_CONFIRMED, self::STATUS_DONE, $actor);
+		self::rewardVisit($booking_srl);
+		return true;
+	}
+
+	/**
 	 * 예약 상태 처리 — 확정 / 취소 / 노쇼 / 완료 / 메모.
 	 */
 	public function procReservationAdminUpdateBooking()
@@ -835,12 +896,7 @@ class Admin extends Base
 				break;
 
 			case 'done':
-				// 전이에 이긴 쪽만 적립한다. 두 번 눌러도 적립은 한 번이다
-				if (BookingModel::transition($booking_srl, [self::STATUS_CONFIRMED], self::STATUS_DONE))
-				{
-					BookingModel::log($booking_srl, 'done', self::STATUS_CONFIRMED, self::STATUS_DONE, $actor);
-					self::rewardVisit($booking_srl);
-				}
+				self::completeBooking($booking_srl, $actor);
 				break;
 
 			case 'memo':
@@ -1278,7 +1334,7 @@ class Admin extends Base
 			'position' => Lang::fromRequest('position', mb_substr(trim((string)\Context::get('position')), 0, 100)),
 			'summary' => Lang::fromRequest('summary', mb_substr(trim((string)\Context::get('summary')), 0, 250)),
 			'content' => Lang::fromRequest('content', (string)\Context::get('content')),
-			'thumb' => mb_substr(trim((string)\Context::get('thumb')), 0, 250),
+			'thumb' => $this->saveStaffPhoto() ?? mb_substr(trim((string)\Context::get('thumb')), 0, 250),
 			'share_rate' => self::parseRate((string)\Context::get('share_rate')),
 			'status' => \Context::get('status') === StaffModel::STATUS_HIDDEN ? StaffModel::STATUS_HIDDEN : StaffModel::STATUS_ACTIVE,
 			'list_order' => (int)\Context::get('list_order'),
@@ -1359,6 +1415,16 @@ class Admin extends Base
 		$to = preg_replace('/\D/', '', (string)\Context::get('period_to'));
 
 		$error = '';
+		$pending = 0;
+		if ($staff_srl > 0 && strlen($from) === 8 && strlen($to) === 8 && \Context::get('complete_past') === 'Y')
+		{
+			$logged_info = \Context::get('logged_info');
+			foreach (SettlementModel::getPastConfirmed(self::instanceSrl(), $staff_srl, $from, $to) as $past)
+			{
+				self::completeBooking((int)$past->booking_srl, $logged_info ? (int)$logged_info->member_srl : 0);
+			}
+		}
+
 		if ($staff_srl <= 0 || !StaffModel::get($staff_srl))
 		{
 			$error = 'need_staff';
@@ -1375,6 +1441,7 @@ class Admin extends Base
 		elseif (!count(SettlementModel::getTargets(self::instanceSrl(), $staff_srl, $from, $to)))
 		{
 			$error = 'empty';
+			$pending = count(SettlementModel::getPastConfirmed(self::instanceSrl(), $staff_srl, $from, $to));
 		}
 
 		$settlement_srl = 0;
@@ -1394,7 +1461,7 @@ class Admin extends Base
 				return new \BaseObject(-1, 'msg_rsv_settlement_err_' . $error);
 			}
 			$this->setRedirectUrl(getNotEncodedUrl('', 'module', 'admin', 'act', 'dispReservationAdminSettlements',
-				'se_error', $error, 'se_staff', $staff_srl ?: '', 'se_from', $from, 'se_to', $to));
+				'se_error', $error, 'se_staff', $staff_srl ?: '', 'se_from', $from, 'se_to', $to, 'se_pending', $pending ?: ''));
 			return;
 		}
 

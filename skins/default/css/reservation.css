@@ -83,6 +83,8 @@
 .rsv-btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 20px; border: 1px solid transparent; border-radius: 11px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; transition: filter .15s; }
 .rsv-btn-primary { background: var(--rsv-brand); color: #fff; }
 .rsv-btn-primary:hover { filter: brightness(1.06); }
+.rsv a.rsv-btn { text-decoration: none; }
+.rsv a.rsv-btn-primary, .rsv a.rsv-btn-primary:hover { color: #fff; }
 .rsv-btn-ghost { background: #fff; border-color: var(--rsv-border); color: var(--rsv-sub); }
 .rsv-btn-ghost:hover { border-color: #e5484d; color: #e5484d; }
 

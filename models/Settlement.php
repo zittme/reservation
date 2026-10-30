@@ -184,7 +184,7 @@ class Settlement
 	 * @param string $to
 	 * @return array
 	 */
-	public static function getTargets(int $module_srl, int $staff_srl, string $from, string $to): array
+	public static function getTargets(int $module_srl, int $staff_srl, string $from, string $to, string $status = Base::STATUS_DONE, ?string $before = null): array
 	{
 		$oDB = \Rhymix\Framework\DB::getInstance();
 		$prefix = \Rhymix\Framework\Config::get('db.master.prefix') ?: '';
@@ -195,12 +195,13 @@ class Settlement
 			' FROM `' . $prefix . 'reservation_booking`' .
 			' WHERE staff_srl = ? AND status = ? AND settlement_srl = 0' .
 			' AND service_date >= ? AND service_date <= ?' .
+			($before !== null ? ' AND service_date < ?' : '') .
 			' ORDER BY service_date ASC, booking_srl ASC';
 
 		try
 		{
 			$stmt = $oDB->getHandle()->prepare($sql);
-			$stmt->execute([$staff_srl, Base::STATUS_DONE, $from, $to]);
+			$stmt->execute($before !== null ? [$staff_srl, $status, $from, $to, $before] : [$staff_srl, $status, $from, $to]);
 			$rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
 		}
 		catch (\Throwable $e)
@@ -209,6 +210,22 @@ class Settlement
 		}
 
 		return is_array($rows) ? $rows : [];
+	}
+
+	/**
+	 * 이용일이 지났는데 아직 「이용 완료」로 바뀌지 않은 확정 예약.
+	 *
+	 * 정산은 이용 완료 예약만 담으므로, 확정 상태로 남은 지난 예약이 있으면 정산 대상이 비어 보인다.
+	 *
+	 * @param int $module_srl
+	 * @param int $staff_srl
+	 * @param string $from YYYYMMDD
+	 * @param string $to YYYYMMDD
+	 * @return array
+	 */
+	public static function getPastConfirmed(int $module_srl, int $staff_srl, string $from, string $to): array
+	{
+		return self::getTargets($module_srl, $staff_srl, $from, $to, Base::STATUS_CONFIRMED, Base::localDay());
 	}
 
 	/**

@@ -8,7 +8,7 @@ $st_days = explode(',', $lang->reservation_dow);
 @endphp
 
 <div class="rsva">
-	<form action="{{ getUrl('') }}" method="post">
+	<form action="{{ getUrl('') }}" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="module" value="admin" />
 		<input type="hidden" name="act" value="procReservationAdminInsertStaff" />
 		<input type="hidden" name="staff_srl" value="{{ $st_srl }}" />
@@ -40,6 +40,12 @@ $st_days = explode(',', $lang->reservation_dow);
 					</select>
 				</div>
 				<div>
+					<label>{{ $lang->rsv_staff_thumb_upload }}</label>
+					@if (!empty($staff->thumb))
+					<img src="{{ $staff->thumb }}" alt="" style="display:block;width:72px;height:72px;margin-bottom:8px;border-radius:50%;object-fit:cover;border:1px solid #e5e8ee" />
+					@endif
+					<input type="file" name="thumb_file" accept="image/*" />
+					<small style="display:block;margin:4px 0 10px;color:#6b7684">{{ $lang->rsv_staff_thumb_help }}</small>
 					<label>{{ $lang->rsv_staff_thumb }}</label>
 					<input type="text" name="thumb" value="{{ $staff->thumb ?? '' }}" />
 				</div>

@@ -1,0 +1,10 @@
+@version(2)
+@load('css/reservation.css')
+
+<div class="rsv rsv-narrow">
+	@include('_manage')
+	<p class="rsv-warn" role="alert">{{ $rsv_notice_text }}</p>
+	<div class="rsv-actions">
+		<a class="rsv-btn rsv-btn-primary" href="{{ $rsv_notice_back }}">{{ $lang->cmd_reservation_go_back }}</a>
+	</div>
+</div>

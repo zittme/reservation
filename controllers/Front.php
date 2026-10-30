@@ -105,7 +105,7 @@ class Front extends Base
 		$resource = $this->requireResource();
 		if ($resource instanceof \BaseObject)
 		{
-			return $resource;
+			return $this->renderNotice((string)$resource->getMessage(), null);
 		}
 
 		$is_staff_mode = (string)($resource->booking_mode ?? 'slot') === 'staff';
@@ -211,7 +211,7 @@ class Front extends Base
 		$resource = $this->requireResource();
 		if ($resource instanceof \BaseObject)
 		{
-			return $resource;
+			return $this->renderNotice((string)$resource->getMessage(), null);
 		}
 
 		$is_staff_mode = (string)($resource->booking_mode ?? 'slot') === 'staff';
@@ -228,7 +228,11 @@ class Front extends Base
 			$pick_time = trim((string)\Context::get('start_time'));
 			if (strlen($pick_date) !== 8 || Availability::toMinutes($pick_time) === null)
 			{
-				return new \BaseObject(-1, 'msg_invalid_request');
+				return $this->renderNotice('msg_invalid_request', $resource);
+			}
+			if ($this->isPastStart($resource, $pick_date . str_replace(':', '', $pick_time)))
+			{
+				return $this->renderNotice('msg_reservation_too_late', $resource);
 			}
 
 			$staff = StaffModel::get((int)\Context::get('staff_srl'));
@@ -252,7 +256,11 @@ class Front extends Base
 			$slot = Slot::get($slot_srl);
 			if (!$slot || (int)$slot->resource_srl !== (int)$resource->resource_srl)
 			{
-				return new \BaseObject(-1, 'msg_reservation_no_slot');
+				return $this->renderNotice('msg_reservation_no_slot', $resource);
+			}
+			if ($this->isPastStart($resource, $slot->slot_date . str_replace(':', '', $slot->start_time)))
+			{
+				return $this->renderNotice('msg_reservation_too_late', $resource);
 			}
 		}
 
@@ -316,6 +324,46 @@ class Front extends Base
 		$this->setManageLinks();
 		$this->setTemplatePath($this->getSkinPath());
 		$this->setTemplateFile('form');
+	}
+
+	/**
+	 * 예약 시작 시각이 예약 가능 한계(지금 + 최소 예약 간격)보다 이른가.
+	 *
+	 * @param object $resource
+	 * @param string $start YYYYMMDDHHII
+	 * @return bool
+	 */
+	protected function isPastStart(object $resource, string $start): bool
+	{
+		return $start < self::localDate('YmdHi', time() + 60 * max(0, (int)$resource->min_lead_minutes));
+	}
+
+	/**
+	 * 돌아가기 버튼이 있는 안내 화면. 스킨에 notice 템플릿이 없으면 기존처럼 오류 객체를 돌려준다.
+	 *
+	 * @param string $message_key 언어 키
+	 * @param ?object $resource 있으면 그 달력으로, 없으면 목록으로 돌아간다
+	 * @return mixed
+	 */
+	protected function renderNotice(string $message_key, ?object $resource)
+	{
+		$skin_path = $this->getSkinPath();
+		if (!is_file($skin_path . 'notice.html'))
+		{
+			return new \BaseObject(-1, $message_key);
+		}
+		$text = (string)lang('reservation.' . $message_key);
+		if ($text === 'reservation.' . $message_key)
+		{
+			$text = (string)lang($message_key);
+		}
+		\Context::set('rsv_notice_text', $text);
+		\Context::set('rsv_notice_back', $resource
+			? getUrl('', 'mid', \Context::get('mid'), 'act', 'dispReservationCalendar', 'resource_srl', (int)$resource->resource_srl)
+			: getUrl('', 'mid', \Context::get('mid'), 'act', 'dispReservationList'));
+		$this->setManageLinks();
+		$this->setTemplatePath($skin_path);
+		$this->setTemplateFile('notice');
 	}
 
 	/**
